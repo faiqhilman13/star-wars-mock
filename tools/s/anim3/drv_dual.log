@@ -1,0 +1,27 @@
+d_c1: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 106s err=None
+d_c1: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22] in 72s err=None
+CLIP_OK d_c1
+d_c2: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 106s err=None
+d_c2: done [12, 13, 14, 15, 16, 17, 18, 19, 20] in 62s err=None
+CLIP_OK d_c2
+d_c3: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 104s err=None
+d_c3: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 81s err=None
+d_c3: done [24, 25, 26, 27, 28] in 34s err=None
+CLIP_OK d_c3
+d_c4: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 105s err=None
+d_c4: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22] in 73s err=None
+CLIP_OK d_c4
+d_block: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 106s err=None
+d_block: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 81s err=None
+d_block: done [24, 25, 26, 27, 28, 29, 30] in 48s err=None
+CLIP_OK d_block
+d_run: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 98s err=None
+d_run: done [12, 13, 14, 15, 16, 17, 18, 19, 20] in 59s err=None
+CLIP_OK d_run
+d_idle: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 104s err=None
+d_idle: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 80s err=None
+d_idle: done [24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35] in 83s err=None
+d_idle: done [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47] in 80s err=None
+d_idle: done [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59] in 81s err=None
+d_idle: done [60] in 9s err=None
+CLIP_OK d_idle

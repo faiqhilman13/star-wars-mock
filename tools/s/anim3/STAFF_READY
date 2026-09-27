@@ -1,0 +1,10 @@
+# Saberstaff set (/Game/Jedi/Anims), 30 fps, root motion off. Held in RIGHT hand, same grip as single saber (hand_r (-7,2,0) (35,0,180)). Blade1 = +Z blade, Blade2 = -Z blade.
+# Contact windows = seconds where any blade tip moves >=1500 cm/s and is >=40 cm in front within +-55deg of forward.
+# Combos start and end on the set's Idle frame 0. chain = earliest sensible time to chain the next combo (after last strike +0.1 s, or after the spin settles).
+AS_Staff_Idle | 2.000 s (60 f, loop) | contacts: none | chain: n/a
+AS_Staff_Run | 0.667 s (20 f, loop) | authored ground speed 680 cm/s | contacts: none | chain: n/a
+AS_Staff_Block | 1.000 s (30 f, loop) | two-handed diagonal guard | contacts: none | chain: n/a
+AS_Staff_Combo1 | 0.867 s (26 f) | contacts: 0.133-0.167 (R-blade2), 0.200-0.300 (R-blade1+R-blade2), 0.333-0.467 (R-blade1+R-blade2), 0.500-0.533 (R-blade2) | peak tip 4108 cm/s in contact (clip max 4812) | chain: 0.633 s
+AS_Staff_Combo2 | 0.900 s (27 f) | contacts: 0.100-0.233 (R-blade2), 0.267-0.367 (R-blade1), 0.633-0.733 (R-blade1) | peak tip 4848 cm/s in contact (clip max 4848) | chain: 0.833 s
+AS_Staff_Combo3 | 0.933 s (28 f) | contacts: 0.000-0.167 (R-blade1+R-blade2), 0.233-0.333 (R-blade1), 0.367-0.433 (R-blade2), 0.467-0.633 (R-blade1+R-blade2) | peak tip 4340 cm/s in contact (clip max 4340) | chain: 0.733 s
+AS_Staff_Combo4 | 0.867 s (26 f) | contacts: 0.100-0.133 (R-blade1), 0.200-0.300 (R-blade2), 0.333-0.433 (R-blade1) | peak tip 3301 cm/s in contact (clip max 3468) | chain: 0.600 s

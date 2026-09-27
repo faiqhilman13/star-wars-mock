@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "JediDamageable.h"
 #include "JediCharacter.generated.h"
 
 class USpringArmComponent;
@@ -51,6 +52,47 @@ struct FSaberSwing
 };
 
 /**
+ * A saber form the player can cycle through: which sabers are held (single blade, one per hand,
+ * a double-bladed staff...) and the moveset that goes with them. Any saber actor with scene
+ * components BladeRoot/BladeTip (and optionally BladeRoot2/BladeTip2) works.
+ */
+USTRUCT(BlueprintType)
+struct FSaberStyle
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Style")
+	FText DisplayName;
+
+	/** Saber held in the right hand (SaberSocket), placed with the character's GripLoc/GripRot. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Style")
+	TSubclassOf<AActor> MainSaberClass;
+
+	/** Optional second saber for the left hand. Its grip is the right-hand grip mirrored across the body. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Style")
+	TSubclassOf<AActor> OffhandSaberClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Style")
+	FName OffhandSocket = TEXT("hand_l");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Style")
+	TArray<FSaberSwing> Combo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Style")
+	TObjectPtr<UAnimSequenceBase> IdleAnim = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Style")
+	TObjectPtr<UAnimSequenceBase> RunAnim = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Style")
+	TObjectPtr<UAnimSequenceBase> BlockAnim = nullptr;
+
+	/** Scales saber damage for this style (e.g. dual blades hit more often but lighter). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Style")
+	float DamageMultiplier = 1.f;
+};
+
+/**
  * Third-person Jedi: saber combos with blade sweep traces, block/parry,
  * Force Push/Pull/Lightning, Force Dash and a Force double jump.
  * Enemies are the Combat template's Blueprint enemies; they are damaged through
@@ -73,7 +115,7 @@ public:
 	bool TryDeflectBolt(ABlasterBolt* Bolt);
 
 	/** Damages any actor: Combat-template BPI_Damageable actors get knockback via "Apply Damage", others get ApplyDamage + physics impulse. */
-	static void DamageActor(AActor* Target, float Damage, AActor* Causer, const FVector& Location, const FVector& Impulse);
+	static void DamageActor(AActor* Target, float Damage, AActor* Causer, const FVector& Location, const FVector& Impulse, EJediHitKind Kind = EJediHitKind::Generic);
 
 	/** Entry point for the Combat template's BPI_Damageable "Apply Damage" (wired in BP_Jedi). */
 	UFUNCTION(BlueprintCallable, Category = "Jedi")
@@ -100,6 +142,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Jedi") void JediJump();
 	UFUNCTION(BlueprintCallable, Category = "Jedi") void SaberToggle();
 	UFUNCTION(BlueprintCallable, Category = "Jedi") void ToggleCameraSide();
+
+	/** Switches to the next saber style in Styles (single, dual wield, saberstaff...). */
+	UFUNCTION(BlueprintCallable, Category = "Jedi") void CycleSaberStyle();
+	UFUNCTION(BlueprintCallable, Category = "Jedi") void SetSaberStyle(int32 Index);
+	UFUNCTION(BlueprintPure, Category = "Jedi") int32 GetSaberStyleIndex() const { return StyleIndex; }
+
+	/** Musou super: when the Force Surge meter is full, a storm of Force blasts and lightning around you. */
+	UFUNCTION(BlueprintCallable, Category = "Jedi") void ForceStorm();
+	UFUNCTION(BlueprintCallable, Category = "Jedi") void HealBy(float Amount);
+	UFUNCTION(BlueprintCallable, Category = "Jedi") void RestoreForce(float Amount);
+	UFUNCTION(BlueprintCallable, Category = "Jedi") void AddSurge(float Amount);
+	UFUNCTION(BlueprintPure, Category = "Jedi") float GetSurgeFraction() const { return SurgeMax > 0.f ? Surge / SurgeMax : 0.f; }
+	UFUNCTION(BlueprintPure, Category = "Jedi") int32 GetComboHits() const;
+	UFUNCTION(BlueprintPure, Category = "Jedi") int32 GetMaxCombo() const { return MaxCombo; }
+	UFUNCTION(BlueprintPure, Category = "Jedi") float GetHealthFraction() const { return MaxHP > 0.f ? CurrentHP / MaxHP : 0.f; }
+	UFUNCTION(BlueprintPure, Category = "Jedi") bool IsStorming() const { return bStorming; }
+	float GetSurgePerKO() const { return SurgePerKO; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -135,6 +194,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Input") TObjectPtr<UInputAction> DashAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Input") TObjectPtr<UInputAction> SaberToggleAction;
 	UPROPERTY(EditDefaultsOnly, Category = "Input") TObjectPtr<UInputAction> CameraSideAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input") TObjectPtr<UInputAction> SaberStyleAction;
+	UPROPERTY(EditDefaultsOnly, Category = "Input") TObjectPtr<UInputAction> StormAction;
+
+	// ---------- Force Surge / Force Storm ----------
+	UPROPERTY(EditAnywhere, Category = "Jedi|Surge") float SurgeMax = 100.f;
+	UPROPERTY(EditAnywhere, Category = "Jedi|Surge") float SurgePerKO = 2.5f;
+	UPROPERTY(EditAnywhere, Category = "Jedi|Surge") float SurgePerHit = 0.6f;
+	UPROPERTY(EditAnywhere, Category = "Jedi|Surge") float StormRadius = 1500.f;
+	UPROPERTY(EditAnywhere, Category = "Jedi|Surge") float StormDamage = 6.f;
+	UPROPERTY(EditAnywhere, Category = "Jedi|Surge") float StormImpulse = 2200.f;
+	UPROPERTY(EditAnywhere, Category = "Jedi|Surge") float StormLift = 900.f;
+	UPROPERTY(EditAnywhere, Category = "Jedi|Surge") float ComboWindow = 2.5f;
+	UPROPERTY(EditDefaultsOnly, Category = "Jedi|Surge") TObjectPtr<UAnimSequenceBase> StormAnim;
+
+	/** Saber styles to cycle through. Empty = the single SaberClass with Combo/Stance*Anim/BlockAnim. */
+	UPROPERTY(EditDefaultsOnly, Category = "Jedi|Styles") TArray<FSaberStyle> Styles;
 
 	// ---------- Assets ----------
 	UPROPERTY(EditDefaultsOnly, Category = "Jedi|Assets") TSubclassOf<AActor> SaberClass;
@@ -256,6 +331,8 @@ protected:
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Jedi|State") float CurrentHP = 0.f;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Jedi|State") float ForcePower = 0.f;
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Jedi|State") TObjectPtr<AActor> Saber;
+	/** Left-hand saber of the current style (dual wield), if any. */
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "Jedi|State") TObjectPtr<AActor> OffhandSaber;
 
 private:
 	// input glue
@@ -270,7 +347,7 @@ private:
 	bool SpendForce(float Cost, bool bUseCooldown);
 	FVector AimForwardFlat() const;
 	TArray<AActor*> CharactersInCone(float Range, float MinDot) const;
-	void DealDamage(AActor* Target, float Damage, const FVector& Location, const FVector& Impulse);
+	void DealDamage(AActor* Target, float Damage, const FVector& Location, const FVector& Impulse, EJediHitKind Kind = EJediHitKind::Generic);
 	void NotifyDangerAhead();
 	void SpawnWave(const FVector& Loc, const FRotator& Rot, float Scale = 1.f);
 	void SpawnBolt(const FVector& Start, const FVector& End);
@@ -284,6 +361,14 @@ private:
 	void EndSwing();
 	void TickSwing();
 	bool GetBlade(FVector& OutBase, FVector& OutTip) const;
+	/** Every blade of every held saber (main, second staff blade, off-hand), as base/tip pairs. */
+	int32 GetBlades(TArray<FVector>& OutBases, TArray<FVector>& OutTips) const;
+	/** Destroys the held sabers and spawns the given ones (off-hand grip mirrored from the right hand). */
+	void SpawnSabers(TSubclassOf<AActor> MainClass, TSubclassOf<AActor> OffhandClass, FName OffhandSocket);
+	/** Right-hand grip mirrored onto the left hand, relative to OffhandSocket (reference pose). */
+	FTransform MirroredOffhandGrip(FName OffhandSocket) const;
+	/** Keeps second blades (BladeRoot2) ignited/retracted in step with each saber's main blade. */
+	void SyncSecondaryBlades();
 	void LightningZap();
 	void EndDash();
 	void Parry(AActor* Attacker);
@@ -300,7 +385,7 @@ private:
 	void TickTrail();
 
 	struct FTrailSample { float Time; FVector Base; FVector Tip; float Strength; };
-	TArray<FTrailSample> TrailSamples;
+	TArray<TArray<FTrailSample>> BladeTrails; // one ribbon per blade
 	FQuat BaseMeshRotation = FQuat::Identity;
 	FRotator CurrentLean = FRotator::ZeroRotator;
 	float LastYaw = 0.f;
@@ -313,7 +398,17 @@ private:
 	float SwingStartTime = 0.f;
 	float SwingLength = 0.f;
 	bool bHaveLastBlade = false;
-	FVector LastBladeBase, LastBladeTip;
+	TArray<FVector> LastBladeBases, LastBladeTips;
+	int32 StyleIndex = 0;
+	float Surge = 0.f;
+	bool bSurgeAnnounced = false;
+	int32 ComboHits = 0;
+	float ComboLastTime = -100.f;
+	int32 MaxCombo = 0;
+	bool bStorming = false;
+	void StormBlast(float RadiusScale);
+	void RegisterComboHit();
+	float StyleDamageMultiplier = 1.f;
 	TSet<TWeakObjectPtr<AActor>> SwingHits;
 	float RiposteUntil = -1.f;
 

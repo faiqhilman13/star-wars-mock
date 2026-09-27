@@ -1,0 +1,153 @@
+{
+ "AS_Dual_Combo1": {
+  "frames": 22,
+  "len_s": 0.733,
+  "windows_s": [
+   [
+    0.1,
+    0.233,
+    [
+     "L-saber",
+     "R-blade1"
+    ]
+   ],
+   [
+    0.3,
+    0.4,
+    [
+     "L-saber",
+     "R-blade1"
+    ]
+   ]
+  ],
+  "peak_tip_cm_s": 5150,
+  "peak_frame": 11,
+  "chain_frame": 15,
+  "chain_s": 0.5
+ },
+ "AS_Dual_Combo2": {
+  "frames": 20,
+  "len_s": 0.667,
+  "windows_s": [
+   [
+    0.0,
+    0.067,
+    [
+     "L-saber"
+    ]
+   ],
+   [
+    0.2,
+    0.3,
+    [
+     "L-saber",
+     "R-blade1"
+    ]
+   ],
+   [
+    0.4,
+    0.5,
+    [
+     "L-saber",
+     "R-blade1"
+    ]
+   ]
+  ],
+  "peak_tip_cm_s": 4983,
+  "peak_frame": 2,
+  "chain_frame": 18,
+  "chain_s": 0.6
+ },
+ "AS_Dual_Combo3": {
+  "frames": 28,
+  "len_s": 0.933,
+  "windows_s": [
+   [
+    0.033,
+    0.1,
+    [
+     "L-saber"
+    ]
+   ],
+   [
+    0.133,
+    0.233,
+    [
+     "R-blade1"
+    ]
+   ],
+   [
+    0.267,
+    0.367,
+    [
+     "L-saber"
+    ]
+   ],
+   [
+    0.4,
+    0.5,
+    [
+     "R-blade1"
+    ]
+   ],
+   [
+    0.533,
+    0.667,
+    [
+     "L-saber"
+    ]
+   ],
+   [
+    0.7,
+    0.733,
+    [
+     "R-blade1"
+    ]
+   ],
+   [
+    0.833,
+    0.867,
+    [
+     "L-saber"
+    ]
+   ]
+  ],
+  "peak_tip_cm_s": 4028,
+  "peak_frame": 18,
+  "chain_frame": 28,
+  "chain_s": 0.933
+ },
+ "AS_Dual_Combo4": {
+  "frames": 22,
+  "len_s": 0.733,
+  "windows_s": [
+   [
+    0.0,
+    0.033,
+    [
+     "L-saber"
+    ]
+   ],
+   [
+    0.2,
+    0.3,
+    [
+     "L-saber",
+     "R-blade1"
+    ]
+   ],
+   [
+    0.4,
+    0.433,
+    [
+     "L-saber",
+     "R-blade1"
+    ]
+   ]
+  ],
+  "peak_tip_cm_s": 4275,
+  "peak_frame": 2,
+  "chain_frame": 16,
+  "chain_s": 0.533
+ }
+}

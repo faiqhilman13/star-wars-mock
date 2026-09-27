@@ -1,9 +1,9 @@
 # Jedi Arena (UE 5.8 prototype)
 
-Third-person lightsaber + Force combat in a small arena. It was built through the Unreal MCP inside the editor, and the hilt was modelled in Blender.
+Third-person lightsaber + Force combat: a Dynasty-Warriors-style horde arena where one Jedi takes on hundreds of droids, plus the original training arena. It was built through the Unreal MCP inside the editor; the hilt and the Grey Warden character were modelled in Blender.
 
 **Unreal project:** `C:\Users\User\Documents\Unreal Projects\JediArena\JediArena.uproject`
-**Map:** `/Game/Jedi/Maps/Lvl_JediArena`. This is the startup and default map, and it uses `BP_JediGameMode`.
+**Maps:** `/Game/Jedi/Maps/Lvl_HordeArena` (the horde mode) is the startup and default map. `/Game/Jedi/Maps/Lvl_JediArena` is the original training arena. Both use `BP_JediGameMode`, whose HUD is `AJediHUD`.
 
 ## Repository layout
 
@@ -42,6 +42,8 @@ Third-person lightsaber + Force combat in a small arena. It was built through th
 | **Force Lightning** (hold to channel) | Hold F | RT |
 | Ignite / retract saber | T | X |
 | Swap camera shoulder | R | D-pad down |
+| **Cycle saber style**: single blade, dual wield (Jar'Kai), saberstaff | V | D-pad up |
+| **Force Storm** (when the Force Surge meter is full) | C | Left stick click |
 
 - The blue bar under your health is your Force.
 - Blocking costs 8 Force per hit and stops regeneration. If you run out, your guard breaks.
@@ -53,6 +55,39 @@ Third-person lightsaber + Force combat in a small arena. It was built through th
   - Remotes take 3 hits and respawn.
 - **Decapitation:** a killing saber blow takes the head on combo swings 2 and 3 and on high cuts. On other killing blows it's a 60% chance (`DecapChance` in BP_Jedi).
 - **Sound:** all sounds are synthesized by `audio/gen_sounds.py`. They cover the saber hum (its pitch and volume follow blade speed), ignite/retract, swings, hits, clashes, Force push, the lightning loop, and remote blaster fire, deflect and explosion. The editor command `jedi.ImportSounds <folder> /Game/Jedi/Audio` reimports them.
+
+## Horde mode: the Duneglass Colosseum
+
+**How it plays**
+- You fight six escalating waves, alone. Enemies come through the colosseum's four gates, and drop pods fall from the sky.
+- **KOs and combo hits fill the Force Surge meter.** When it's full, **Force Storm** (C) blasts everything around you with shockwaves and lightning.
+- The HUD shows the KO count, combo hits, wave, crowd hype, Force Surge, the boss bar and announcer banners.
+- Enemies sometimes drop orbs: green heals, blue restores Force.
+
+**The arena**
+- **The Gobbler:** a sand-pit monster that eats any enemy knocked into it. It spits the Jedi back out.
+- **Fizz barrels:** they explode in chains.
+- **Jump pads:** they launch you across the arena.
+- **Crowd:** the stands are packed with spectators who get more excited as hype rises.
+
+**Enemies** (all `AHordeEnemy`, in `Source/.../HordeEnemy.*`)
+
+| Enemy | What it does |
+|---|---|
+| **Clanker droids** | Fodder with terrible aim and a lot of chatter |
+| **Bulwark Troopers** | Carry a frontal energy shield. Break it with the Force, or hit them from the side |
+| **Buzz-Rollers** | Roll in and unfold into shielded turrets. Lightning fries the shield |
+| **Jet Ghosts** | Hover and fire rockets. Force Pull brings them down |
+| **Magna Wardens** | Guard with electrostaffs. Parry their strikes |
+| **Sith Acolytes** | Officers |
+| **Scrap Colossus** (`ABossWalker`) | The boss: a junk chicken-walker. Its glowing knees are the weak points; it collapses at every 25% of health and rages below 50% |
+
+**Code**
+- `AHordeDirector`: waves, attack tokens (only a few enemies shoot or swing at once), KOs, hype and banners.
+- `AColosseumArena`: the procedural arena, plus `ASandGobbler`, `AFizzBarrel` and `AJumpPad`.
+- `ADropPod` and `AJediHUD`.
+- Hits reach enemies through `IJediDamageable` (`JediDamageable.h`), with a hit kind: saber, push, pull, lightning, bolt, storm or explosion.
+- Debug: `jedi.HordeDebug` lists the live enemies. `ke * AddSurge 100` fills the meter.
 
 ## Architecture
 

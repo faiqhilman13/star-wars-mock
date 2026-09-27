@@ -6,6 +6,10 @@
 #include "BlasterBolt.h"
 #include "Components/AudioComponent.h"
 #include "SeveredLimb.h"
+#include "HordeDirector.h"
+#include "Engine/SkeletalMeshSocket.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Components/PointLightComponent.h"
 #include "Sound/SoundBase.h"
 #include "Sound/SoundWave.h"
 #include "Engine/Texture2D.h"
@@ -583,22 +587,15 @@ void AJediCharacter::BeginPlay()
 		CallBP(ForceWidget.Get(), TEXT("SetBarColor"), { FLinearColor(0.08f, 0.4f, 1.f, 1.f) });
 	}
 
-	if (SaberClass)
+	if (Styles.Num() > 0)
 	{
-		FActorSpawnParameters Params;
-		Params.Owner = this;
-		Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		Saber = GetWorld()->SpawnActor<AActor>(SaberClass, GetActorTransform(), Params);
+		SetSaberStyle(0);
+	}
+	else if (SaberClass)
+	{
+		SpawnSabers(SaberClass, nullptr, NAME_None);
 		if (Saber)
 		{
-			Saber->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SaberSocket);
-			Saber->SetActorRelativeLocation(GripLoc);
-			Saber->SetActorRelativeRotation(GripRot);
-			if (HumSound)
-			{
-				HumAudio = UGameplayStatics::SpawnSoundAttached(HumSound, Saber->GetRootComponent(), NAME_None, FVector(0.f, 0.f, 50.f),
-					EAttachLocation::KeepRelativeOffset, true, HumIdleVolume, 1.f, 0.f, nullptr, nullptr, false);
-			}
 			PlaySoundAt(IgniteSound, Saber->GetActorLocation(), 0.8f);
 		}
 	}
@@ -649,9 +646,12 @@ void AJediCharacter::EnableCapePhysics()
 
 void AJediCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (Saber)
+	for (AActor* Held : { Saber.Get(), OffhandSaber.Get() })
 	{
-		Saber->Destroy();
+		if (Held)
+		{
+			Held->Destroy();
+		}
 	}
 	if (UWorld* World = GetWorld())
 	{
@@ -698,6 +698,8 @@ void AJediCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Bind(DashAction, ETriggerEvent::Started, &AJediCharacter::ForceDash);
 	Bind(SaberToggleAction, ETriggerEvent::Started, &AJediCharacter::SaberToggle);
 	Bind(CameraSideAction, ETriggerEvent::Started, &AJediCharacter::ToggleCameraSide);
+	Bind(SaberStyleAction, ETriggerEvent::Started, &AJediCharacter::CycleSaberStyle);
+	Bind(StormAction, ETriggerEvent::Started, &AJediCharacter::ForceStorm);
 }
 
 void AJediCharacter::OnMove(const FInputActionValue& Value)
@@ -782,7 +784,12 @@ TArray<AActor*> AJediCharacter::CharactersInCone(float Range, float MinDot) cons
 			continue;
 		}
 		const ATrainingRemote* Remote = Cast<ATrainingRemote>(Other);
-		if (!Other->IsA(ACharacter::StaticClass()) && !(Remote && Remote->IsActive()))
+		const IJediDamageable* Damageable = Cast<IJediDamageable>(Other);
+		if (!Other->IsA(ACharacter::StaticClass()) && !(Remote && Remote->IsActive()) && !Damageable)
+		{
+			continue;
+		}
+		if (Damageable && !Damageable->IsJediTargetAlive())
 		{
 			continue;
 		}
@@ -810,6 +817,10 @@ static ACharacter* NearestEnemy(const AJediCharacter* Self, float Range, float M
 		{
 			continue;
 		}
+		if (const IJediDamageable* Damageable = Cast<IJediDamageable>(*It); Damageable && !Damageable->IsJediTargetAlive())
+		{
+			continue;
+		}
 		const FVector Delta = It->GetActorLocation() - Loc;
 		const float Dist = Delta.Size();
 		if (Dist < BestDist && FVector::DotProduct(Delta.GetSafeNormal2D(), Self->GetActorForwardVector()) >= MinDotFromFacing)
@@ -821,18 +832,24 @@ static ACharacter* NearestEnemy(const AJediCharacter* Self, float Range, float M
 	return Best;
 }
 
-void AJediCharacter::DealDamage(AActor* Target, float Damage, const FVector& Location, const FVector& Impulse)
+void AJediCharacter::DealDamage(AActor* Target, float Damage, const FVector& Location, const FVector& Impulse, EJediHitKind Kind)
 {
 	if (Target != this)
 	{
-		DamageActor(Target, Damage, this, Location, Impulse);
+		DamageActor(Target, Damage, this, Location, Impulse, Kind);
 	}
 }
 
-void AJediCharacter::DamageActor(AActor* Target, float Damage, AActor* Causer, const FVector& Location, const FVector& Impulse)
+void AJediCharacter::DamageActor(AActor* Target, float Damage, AActor* Causer, const FVector& Location, const FVector& Impulse, EJediHitKind Kind)
 {
 	if (!IsValid(Target))
 	{
+		return;
+	}
+	// Horde enemies, the boss and arena props take the full hit description.
+	if (IJediDamageable* Damageable = Cast<IJediDamageable>(Target))
+	{
+		Damageable->ReceiveJediHit(Damage, Causer, Location, Impulse, Kind);
 		return;
 	}
 	// Combat template actors implement BPI_Damageable::ApplyDamage (damage + knockback + hit FX).
@@ -1025,6 +1042,7 @@ void AJediCharacter::Tick(float DeltaSeconds)
 		}
 	}
 
+	SyncSecondaryBlades();
 	TickLean(DeltaSeconds);
 	TickStance();
 	TickTrail();
@@ -1136,6 +1154,322 @@ bool AJediCharacter::GetBlade(FVector& OutBase, FVector& OutTip) const
 	return true;
 }
 
+int32 AJediCharacter::GetBlades(TArray<FVector>& OutBases, TArray<FVector>& OutTips) const
+{
+	OutBases.Reset();
+	OutTips.Reset();
+	for (const AActor* Held : { Saber.Get(), OffhandSaber.Get() })
+	{
+		for (const TCHAR* Suffix : { TEXT(""), TEXT("2") })
+		{
+			const USceneComponent* Base = FindSceneComponentByName(Held, *FString::Printf(TEXT("BladeRoot%s"), Suffix));
+			const USceneComponent* Tip = FindSceneComponentByName(Held, *FString::Printf(TEXT("BladeTip%s"), Suffix));
+			if (Base && Tip)
+			{
+				OutBases.Add(Base->GetComponentLocation());
+				OutTips.Add(Tip->GetComponentLocation());
+			}
+		}
+	}
+	return OutBases.Num();
+}
+
+void AJediCharacter::SyncSecondaryBlades()
+{
+	for (AActor* Held : { Saber.Get(), OffhandSaber.Get() })
+	{
+		USceneComponent* Main = FindSceneComponentByName(Held, TEXT("BladeRoot"));
+		USceneComponent* Second = FindSceneComponentByName(Held, TEXT("BladeRoot2"));
+		if (Main && Second)
+		{
+			Second->SetRelativeScale3D(Main->GetRelativeScale3D());
+			if (Second->IsVisible() != Main->IsVisible())
+			{
+				Second->SetVisibility(Main->IsVisible(), true);
+			}
+		}
+	}
+}
+
+FTransform AJediCharacter::MirroredOffhandGrip(FName OffhandSocket) const
+{
+	const USkeletalMesh* SK = GetMesh() ? GetMesh()->GetSkeletalMeshAsset() : nullptr;
+	if (!SK)
+	{
+		return FTransform::Identity;
+	}
+	const FReferenceSkeleton& Ref = SK->GetRefSkeleton();
+	auto BoneRefCS = [&Ref](FName Bone)
+	{
+		FTransform T = FTransform::Identity;
+		for (int32 B = Ref.FindBoneIndex(Bone); B != INDEX_NONE; B = Ref.GetParentIndex(B))
+		{
+			T = T * Ref.GetRefBonePose()[B];
+		}
+		return T;
+	};
+	auto SocketRefCS = [&](FName Name)
+	{
+		if (const USkeletalMeshSocket* Socket = SK->FindSocket(Name))
+		{
+			return Socket->GetSocketLocalTransform() * BoneRefCS(Socket->BoneName);
+		}
+		return BoneRefCS(Name);
+	};
+	// Right-hand grip in component space, mirrored across the body's left/right plane
+	// (mesh X for the UE mannequin skeleton, which faces +Y), then expressed relative to the left hand.
+	const FTransform RightCS = FTransform(GripRot, GripLoc) * SocketRefCS(SaberSocket);
+	FVector P = RightCS.GetLocation();
+	P.X = -P.X;
+	const FQuat Q = RightCS.GetRotation();
+	const FTransform LeftCS(FQuat(Q.X, -Q.Y, -Q.Z, Q.W), P);
+	return LeftCS.GetRelativeTransform(SocketRefCS(OffhandSocket));
+}
+
+void AJediCharacter::SpawnSabers(TSubclassOf<AActor> MainClass, TSubclassOf<AActor> OffhandClass, FName OffhandSocket)
+{
+	for (AActor* Old : { Saber.Get(), OffhandSaber.Get() })
+	{
+		if (Old)
+		{
+			Old->Destroy(); // also takes the hum/swing audio attached to it
+		}
+	}
+	Saber = nullptr;
+	OffhandSaber = nullptr;
+	HumAudio = nullptr;
+	SwingAudio = nullptr;
+
+	FActorSpawnParameters Params;
+	Params.Owner = this;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	auto SpawnHeld = [&](TSubclassOf<AActor> Class, FName Socket, const FTransform& Grip) -> AActor*
+	{
+		AActor* Held = Class ? GetWorld()->SpawnActor<AActor>(Class, GetActorTransform(), Params) : nullptr;
+		if (Held)
+		{
+			Held->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
+			Held->SetActorRelativeTransform(Grip);
+			if (!bSaberOn)
+			{
+				CallBP(Held, TEXT("Retract"));
+			}
+		}
+		return Held;
+	};
+	Saber = SpawnHeld(MainClass, SaberSocket, FTransform(GripRot, GripLoc));
+	if (OffhandClass)
+	{
+		const FTransform OffGrip = MirroredOffhandGrip(OffhandSocket);
+		OffhandSaber = SpawnHeld(OffhandClass, OffhandSocket, OffGrip);
+		UE_LOG(LogTemp, Log, TEXT("Jedi: offhand grip on %s loc %s rot %s"), *OffhandSocket.ToString(),
+			*OffGrip.GetLocation().ToCompactString(), *OffGrip.Rotator().ToCompactString());
+	}
+	if (Saber && HumSound)
+	{
+		HumAudio = UGameplayStatics::SpawnSoundAttached(HumSound, Saber->GetRootComponent(), NAME_None, FVector(0.f, 0.f, 50.f),
+			EAttachLocation::KeepRelativeOffset, true, bSaberOn ? HumIdleVolume : 0.f, 1.f, 0.f, nullptr, nullptr, false);
+	}
+	bHaveLastBlade = false;
+	LastBladeBases.Reset();
+	LastBladeTips.Reset();
+	BladeTrails.Reset();
+	if (SaberTrail)
+	{
+		SaberTrail->ClearAllMeshSections();
+	}
+}
+
+void AJediCharacter::HealBy(float Amount)
+{
+	if (!bDead)
+	{
+		CurrentHP = FMath::Min(MaxHP, CurrentHP + Amount);
+		UpdateBars();
+	}
+}
+
+void AJediCharacter::RestoreForce(float Amount)
+{
+	if (!bDead)
+	{
+		ForcePower = FMath::Min(MaxForce, ForcePower + Amount);
+		UpdateBars();
+	}
+}
+
+void AJediCharacter::AddSurge(float Amount)
+{
+	if (bDead || bStorming)
+	{
+		return;
+	}
+	Surge = FMath::Clamp(Surge + Amount, 0.f, SurgeMax);
+	if (Surge >= SurgeMax && !bSurgeAnnounced)
+	{
+		bSurgeAnnounced = true;
+		if (AHordeDirector* Director = AHordeDirector::Get(this))
+		{
+			Director->Announce(TEXT("FORCE STORM READY"), 2.f, FLinearColor(0.35f, 0.75f, 1.f));
+		}
+	}
+}
+
+void AJediCharacter::RegisterComboHit()
+{
+	const float T = Now();
+	if (T - ComboLastTime > ComboWindow)
+	{
+		ComboHits = 0;
+	}
+	++ComboHits;
+	ComboLastTime = T;
+	MaxCombo = FMath::Max(MaxCombo, ComboHits);
+	AddSurge(SurgePerHit);
+}
+
+int32 AJediCharacter::GetComboHits() const
+{
+	return Now() - ComboLastTime <= ComboWindow ? ComboHits : 0;
+}
+
+void AJediCharacter::ForceStorm()
+{
+	if (bDead || bStorming || Surge < SurgeMax)
+	{
+		return;
+	}
+	Surge = 0.f;
+	bSurgeAnnounced = false;
+	bStorming = true;
+	if (bAttacking) { EndSwing(); }
+	if (bBlocking) { BlockStop(); }
+	if (bChanneling) { LightningStop(); }
+	PlayAnim(StormAnim ? StormAnim.Get() : PushAnim.Get(), 0.8f, 1, 0.08f, 0.3f);
+	LaunchCharacter(FVector(0.f, 0.f, 520.f), false, true);
+	if (AHordeDirector* Director = AHordeDirector::Get(this))
+	{
+		Director->Announce(TEXT("FORCE STORM!"), 1.8f, FLinearColor(0.45f, 0.8f, 1.f));
+		Director->AddHype(20.f);
+	}
+	SlowMo(0.35f, 0.45f);
+	FTimerHandle First, Second, Done;
+	GetWorldTimerManager().SetTimer(First, FTimerDelegate::CreateWeakLambda(this, [this]() { StormBlast(1.f); }), 0.3f, false);
+	GetWorldTimerManager().SetTimer(Second, FTimerDelegate::CreateWeakLambda(this, [this]() { StormBlast(1.35f); }), 0.7f, false);
+	GetWorldTimerManager().SetTimer(Done, FTimerDelegate::CreateWeakLambda(this, [this]() { bStorming = false; }), 1.3f, false);
+}
+
+void AJediCharacter::StormBlast(float RadiusScale)
+{
+	if (bDead)
+	{
+		return;
+	}
+	const FVector Loc = GetActorLocation();
+	const float Radius = StormRadius * RadiusScale;
+	for (int32 i = 0; i < 8; ++i)
+	{
+		const FVector Dir = FRotator(0.f, i * 45.f + RadiusScale * 20.f, 0.f).Vector();
+		SpawnWave(Loc + Dir * 120.f - FVector(0.f, 0.f, 60.f), Dir.Rotation(), 1.6f * RadiusScale);
+	}
+	PlaySoundAt(PushSound, Loc, 1.f, 0.65f);
+	if (HitShake)
+	{
+		UGameplayStatics::PlayWorldCameraShake(this, HitShake, Loc, 0.f, 3000.f, 1.f);
+	}
+	const FVector Hand = GetMesh()->GetSocketLocation(TEXT("hand_l"));
+	int32 Bolts = 0;
+	for (TActorIterator<AActor> It(GetWorld()); It; ++It)
+	{
+		AActor* Other = *It;
+		if (Other == this || !IsValid(Other))
+		{
+			continue;
+		}
+		const IJediDamageable* Damageable = Cast<IJediDamageable>(Other);
+		if (!Damageable && !Other->IsA(ACharacter::StaticClass()))
+		{
+			continue;
+		}
+		if (Damageable && !Damageable->IsJediTargetAlive())
+		{
+			continue;
+		}
+		const FVector Delta = Other->GetActorLocation() - Loc;
+		const float Dist = Delta.Size();
+		if (Dist > Radius)
+		{
+			continue;
+		}
+		const float Falloff = FMath::Lerp(1.f, 0.55f, Dist / Radius);
+		const FVector Dir = Delta.GetSafeNormal2D();
+		DealDamage(Other, StormDamage * Falloff, Other->GetActorLocation(), Dir * StormImpulse * Falloff + FVector::UpVector * StormLift, EJediHitKind::Storm);
+		if (Bolts < 12)
+		{
+			SpawnBolt(Hand, Other->GetActorLocation());
+			++Bolts;
+		}
+		RegisterComboHit();
+	}
+}
+
+void AJediCharacter::CycleSaberStyle()
+{
+	if (Styles.Num() > 1)
+	{
+		SetSaberStyle((StyleIndex + 1) % Styles.Num());
+	}
+}
+
+void AJediCharacter::SetSaberStyle(int32 Index)
+{
+	if (!Styles.IsValidIndex(Index) || bDead)
+	{
+		return;
+	}
+	if (bAttacking)
+	{
+		EndSwing();
+	}
+	if (bBlocking)
+	{
+		BlockStop();
+	}
+	StyleIndex = Index;
+	const FSaberStyle& Style = Styles[Index];
+	if (Style.Combo.Num() > 0)
+	{
+		Combo = Style.Combo;
+	}
+	if (Style.IdleAnim) { StanceIdleAnim = Style.IdleAnim; }
+	if (Style.RunAnim) { StanceRunAnim = Style.RunAnim; }
+	if (Style.BlockAnim) { BlockAnim = Style.BlockAnim; }
+	StyleDamageMultiplier = Style.DamageMultiplier;
+	ComboIndex = 0;
+
+	// Restart the stance loop so the new idle/run takes over immediately.
+	if (UAnimInstance* AI = Anim())
+	{
+		if (StanceMontage && AI->Montage_IsPlaying(StanceMontage))
+		{
+			AI->Montage_Stop(0.15f, StanceMontage);
+		}
+	}
+	StanceMontage = nullptr;
+	StanceState = 0;
+
+	SpawnSabers(Style.MainSaberClass ? Style.MainSaberClass : SaberClass, Style.OffhandSaberClass, Style.OffhandSocket);
+	if (bSaberOn && Saber)
+	{
+		PlaySoundAt(IgniteSound, Saber->GetActorLocation(), 0.8f);
+	}
+	UE_LOG(LogTemp, Log, TEXT("Jedi: STYLE %d %s"), Index, *Style.DisplayName.ToString());
+	if (GEngine && IsPlayerControlled())
+	{
+		GEngine->AddOnScreenDebugMessage(0x5AB3, 2.5f, FColor(140, 200, 255), FString::Printf(TEXT("Saber style: %s"), *Style.DisplayName.ToString()));
+	}
+}
+
 void AJediCharacter::TickSwing()
 {
 	const FSaberSwing& Swing = Combo[ComboIndex];
@@ -1146,34 +1480,38 @@ void AJediCharacter::TickSwing()
 	// Track the blade every tick; sweep whenever this frame's interval overlaps the damage window,
 	// so hits still land at low frame rates.
 	{
-		FVector Base = FVector::ZeroVector, Tip = FVector::ZeroVector;
-		const bool bHasSaber = bSaberOn && GetBlade(Base, Tip);
+		TArray<FVector> Bases, Tips;
+		const bool bHasSaber = bSaberOn && GetBlades(Bases, Tips) > 0;
 		if (!bHasSaber)
 		{
 			// Unarmed fallback: short punch reach from the hand.
-			Base = GetMesh()->GetSocketLocation(SaberSocket);
-			Tip = Base + GetActorForwardVector() * 60.f;
+			Bases = { GetMesh()->GetSocketLocation(SaberSocket) };
+			Tips = { Bases[0] + GetActorForwardVector() * 60.f };
 		}
-		if (bHaveLastBlade && TPrev <= Swing.HitEnd && T >= Swing.HitStart)
+		if (bHaveLastBlade && LastBladeBases.Num() == Bases.Num() && TPrev <= Swing.HitEnd && T >= Swing.HitStart)
 		{
 			FCollisionObjectQueryParams Objects;
 			Objects.AddObjectTypesToQuery(ECC_Pawn);
 			Objects.AddObjectTypesToQuery(ECC_WorldDynamic);
 			Objects.AddObjectTypesToQuery(ECC_PhysicsBody);
 			FCollisionQueryParams Query(SCENE_QUERY_STAT(SaberSweep), false, this);
-			if (Saber)
+			for (AActor* Held : { Saber.Get(), OffhandSaber.Get() })
 			{
-				Query.AddIgnoredActor(Saber);
+				if (Held)
+				{
+					Query.AddIgnoredActor(Held);
+				}
 			}
 
 			const bool bRiposte = Now() < RiposteUntil;
-			const float Damage = (bHasSaber ? SaberDamage : FistDamage) * Swing.DamageMultiplier * (bRiposte ? RiposteMultiplier : 1.f);
+			const float Damage = (bHasSaber ? SaberDamage : FistDamage) * Swing.DamageMultiplier * StyleDamageMultiplier * (bRiposte ? RiposteMultiplier : 1.f);
 			const int32 Samples = 6;
+			for (int32 BladeIdx = 0; BladeIdx < Bases.Num(); ++BladeIdx)
 			for (int32 S = 0; S <= Samples; ++S)
 			{
 				const float A = static_cast<float>(S) / Samples;
-				const FVector From = FMath::Lerp(LastBladeBase, LastBladeTip, A);
-				const FVector To = FMath::Lerp(Base, Tip, A);
+				const FVector From = FMath::Lerp(LastBladeBases[BladeIdx], LastBladeTips[BladeIdx], A);
+				const FVector To = FMath::Lerp(Bases[BladeIdx], Tips[BladeIdx], A);
 				TArray<FHitResult> Hits;
 				GetWorld()->SweepMultiByObjectType(Hits, From, To + (To - From).GetSafeNormal() * 0.1f, FQuat::Identity, Objects,
 					FCollisionShape::MakeSphere(BladeTraceRadius), Query);
@@ -1188,8 +1526,16 @@ void AJediCharacter::TickSwing()
 					{
 						continue; // other sabers/attached props
 					}
+					if (const IJediDamageable* DV = Cast<IJediDamageable>(Victim); DV && !DV->IsJediTargetAlive())
+					{
+						continue; // don't farm hits (and hit-stop) off ragdolls
+					}
 					SwingHits.Add(Victim);
 					float HPBefore = -1.f;
+					if (const IJediDamageable* DV = Cast<IJediDamageable>(Victim))
+					{
+						HPBefore = DV->GetJediHealth();
+					}
 					if (FProperty* HPProp = Victim->GetClass()->FindPropertyByName(TEXT("Current HP")))
 					{
 						if (const FDoubleProperty* D = CastField<FDoubleProperty>(HPProp)) { HPBefore = static_cast<float>(D->GetPropertyValue_InContainer(Victim)); }
@@ -1197,7 +1543,8 @@ void AJediCharacter::TickSwing()
 					}
 					
 					const FVector SwingDir = ((To - From).GetSafeNormal2D() + (Victim->GetActorLocation() - GetActorLocation()).GetSafeNormal2D()).GetSafeNormal();
-					DealDamage(Victim, Damage, Hit.ImpactPoint, SwingDir * SaberKnockback + FVector::UpVector * SaberLift);
+					DealDamage(Victim, Damage, Hit.ImpactPoint, SwingDir * SaberKnockback + FVector::UpVector * SaberLift, EJediHitKind::Saber);
+					RegisterComboHit();
 					if (HitFX)
 					{
 						UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, HitFX, Hit.ImpactPoint, SwingDir.Rotation());
@@ -1241,8 +1588,8 @@ void AJediCharacter::TickSwing()
 				}
 			}
 		}
-		LastBladeBase = Base;
-		LastBladeTip = Tip;
+		LastBladeBases = Bases;
+		LastBladeTips = Tips;
 		bHaveLastBlade = true;
 	}
 
@@ -1265,7 +1612,10 @@ void AJediCharacter::SaberToggle()
 		return;
 	}
 	bSaberOn = !bSaberOn;
-	CallBP(Saber, bSaberOn ? TEXT("Ignite") : TEXT("Retract"));
+	for (AActor* Held : { Saber.Get(), OffhandSaber.Get() })
+	{
+		CallBP(Held, bSaberOn ? TEXT("Ignite") : TEXT("Retract"));
+	}
 	PlaySoundAt(bSaberOn ? IgniteSound.Get() : RetractSound.Get(), Saber->GetActorLocation(), 0.8f);
 	if (HumAudio)
 	{
@@ -1402,7 +1752,7 @@ void AJediCharacter::ReceiveTemplateDamage(float Damage, AActor* DamageCauser, F
 	}
 	LastHitTimes.Add(Key, Now());
 
-	if (bDead || TryDefend(DamageCauser))
+	if (bDead || bStorming || !CanBeDamaged() || TryDefend(DamageCauser))
 	{
 		return;
 	}
@@ -1420,7 +1770,7 @@ void AJediCharacter::ReceiveTemplateDamage(float Damage, AActor* DamageCauser, F
 
 float AJediCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	if (bDead)
+	if (bDead || bStorming || !CanBeDamaged())
 	{
 		return 0.f;
 	}
@@ -1493,9 +1843,9 @@ void AJediCharacter::Die()
 	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
 	GetMesh()->SetSimulatePhysics(true);
 	CameraBoom->TargetArmLength = 450.f;
-	if (Saber)
+	for (AActor* Held : { Saber.Get(), OffhandSaber.Get() })
 	{
-		CallBP(Saber, TEXT("Retract"));
+		CallBP(Held, TEXT("Retract"));
 	}
 	// The Combat player controller respawns the pawn when it is destroyed.
 	SetLifeSpan(RespawnTime);
@@ -1621,7 +1971,7 @@ void AJediCharacter::ForcePush()
 	for (AActor* Other : CharactersInCone(PushRange, 0.3f))
 	{
 		const FVector Dir = (Other->GetActorLocation() - Loc).GetSafeNormal2D();
-		DealDamage(Other, PushDamage, Other->GetActorLocation(), Dir * PushImpulse + FVector::UpVector * PushLift);
+		DealDamage(Other, PushDamage, Other->GetActorLocation(), Dir * PushImpulse + FVector::UpVector * PushLift, EJediHitKind::ForcePush);
 	}
 	// Physics props in the cone too.
 	TArray<FOverlapResult> Overlaps;
@@ -1632,7 +1982,7 @@ void AJediCharacter::ForcePush()
 	for (const FOverlapResult& O : Overlaps)
 	{
 		UPrimitiveComponent* Prim = O.GetComponent();
-		if (Prim && Prim->IsSimulatingPhysics() && !Prim->GetOwner()->IsA(ACharacter::StaticClass()))
+		if (Prim && Prim->IsSimulatingPhysics() && !Prim->GetOwner()->IsA(ACharacter::StaticClass()) && !Cast<IJediDamageable>(Prim->GetOwner()))
 		{
 			const FVector Dir = (Prim->GetComponentLocation() - Loc).GetSafeNormal2D();
 			if (FVector::DotProduct(Dir, Fwd) > 0.3f)
@@ -1660,6 +2010,10 @@ void AJediCharacter::ForcePull()
 		{
 			continue;
 		}
+		if (const IJediDamageable* Damageable = Cast<IJediDamageable>(*It); Damageable && !Damageable->IsJediTargetAlive())
+		{
+			continue;
+		}
 		const FVector To = It->GetActorLocation() - Eye;
 		const float Score = FVector::DotProduct(To.GetSafeNormal(), Aim);
 		if (To.Size() < PullRange && Score > BestScore)
@@ -1676,7 +2030,7 @@ void AJediCharacter::ForcePull()
 	const FVector Dir = (GetActorLocation() - TargetLoc).GetSafeNormal2D();
 	PlayAnim(PullAnim, 1.4f, 1, 0.06f, 0.25f);
 	SpawnWave(TargetLoc, Dir.Rotation(), 0.5f);
-	DealDamage(Best, PullDamage, TargetLoc, Dir * PullImpulse + FVector::UpVector * PullLift);
+	DealDamage(Best, PullDamage, TargetLoc, Dir * PullImpulse + FVector::UpVector * PullLift, EJediHitKind::ForcePull);
 }
 
 void AJediCharacter::LightningStart()
@@ -1726,7 +2080,7 @@ void AJediCharacter::LightningZap()
 		const FVector Target = Other->GetActorLocation() + FVector(0.f, 0.f, FMath::FRandRange(-30.f, 40.f));
 		SpawnBolt(Hand, Target);
 		const FVector Dir = (Other->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
-		DealDamage(Other, LightningDamage, Other->GetActorLocation(), Dir * 140.f + FVector::UpVector * 60.f);
+		DealDamage(Other, LightningDamage, Other->GetActorLocation(), Dir * 140.f + FVector::UpVector * 60.f, EJediHitKind::Lightning);
 		++Hits;
 	}
 	if (Hits == 0)
@@ -1900,63 +2254,98 @@ void AJediCharacter::TickTrail()
 		return;
 	}
 	const float T = Now();
-	FVector Base, Tip;
-	if (bSaberOn && !bDead && GetBlade(Base, Tip))
+	TArray<FVector> Bases, Tips;
+	const int32 NumBlades = (bSaberOn && !bDead) ? GetBlades(Bases, Tips) : 0;
+	if (BladeTrails.Num() < NumBlades)
 	{
-		float Strength = 0.f;
-		if (TrailSamples.Num() > 0)
-		{
-			const FTrailSample& Prev = TrailSamples.Last();
-			const float Dt = FMath::Max(T - Prev.Time, 1e-3f);
-			const float Speed = FVector::Dist(Tip, Prev.Tip) / Dt;
-			Strength = FMath::Clamp((Speed - TrailMinSpeed) / FMath::Max(TrailFullSpeed - TrailMinSpeed, 1.f), 0.f, 1.f);
-		}
-		TrailSamples.Add({ T, Base, Tip, Strength });
+		BladeTrails.SetNum(NumBlades);
 	}
-	TrailSamples.RemoveAll([&](const FTrailSample& S) { return T - S.Time > TrailLifetime; });
-
-	float MaxStrength = 0.f;
-	for (const FTrailSample& S : TrailSamples)
+	// Blade colours for tinting, in GetBlades order (main, main blade 2, off-hand, off-hand blade 2).
+	TArray<FLinearColor> BladeColors;
+	for (const AActor* Held : { Saber.Get(), OffhandSaber.Get() })
 	{
-		MaxStrength = FMath::Max(MaxStrength, S.Strength);
-	}
-	if (TrailSamples.Num() < 2 || MaxStrength <= 0.01f)
-	{
-		SaberTrail->ClearAllMeshSections();
-		return;
-	}
-
-	// Three rows per sample (mid-blade -> 3/4 -> tip): the streak is brightest at the tip and fades out
-	// toward the hilt and with age, so it reads as a glowing arc instead of a solid sheet.
-	TArray<FVector> Verts;
-	TArray<int32> Tris;
-	TArray<FVector> Normals;
-	TArray<FVector2D> UVs;
-	TArray<FLinearColor> Colors;
-	TArray<FProcMeshTangent> Tangents;
-	static const float RowAt[3] = { 0.45f, 0.78f, 1.f };
-	static const float RowAlpha[3] = { 0.f, 0.45f, 1.f };
-	const int32 N = TrailSamples.Num();
-	for (int32 i = 0; i < N; ++i)
-	{
-		const FTrailSample& S = TrailSamples[i];
-		const float Age = FMath::Clamp((T - S.Time) / TrailLifetime, 0.f, 1.f);
-		const float A = FMath::Square(1.f - Age) * S.Strength;
-		for (int32 r = 0; r < 3; ++r)
+		for (const TCHAR* Suffix : { TEXT(""), TEXT("2") })
 		{
-			Verts.Add(FMath::Lerp(S.Base, S.Tip, RowAt[r]));
-			Colors.Add(FLinearColor(1.f, 1.f, 1.f, A * RowAlpha[r]));
-			UVs.Add(FVector2D(Age, RowAt[r]));
-			Normals.Add(FVector::UpVector);
-		}
-		if (i > 0)
-		{
-			for (int32 r = 0; r < 2; ++r)
+			if (FindSceneComponentByName(Held, *FString::Printf(TEXT("BladeRoot%s"), Suffix)))
 			{
-				const int32 P0 = (i - 1) * 3 + r, P1 = P0 + 1, C0 = i * 3 + r, C1 = C0 + 1;
-				Tris.Append({ P0, C0, P1, P1, C0, C1 });
+				const UPointLightComponent* Light = Held ? Cast<UPointLightComponent>(FindSceneComponentByName(Held, *FString::Printf(TEXT("BladeLight%s"), Suffix))) : nullptr;
+				BladeColors.Add(Light ? Light->GetLightColor() : FLinearColor(0.1f, 0.45f, 1.f));
 			}
 		}
 	}
-	SaberTrail->CreateMeshSection_LinearColor(0, Verts, Tris, Normals, UVs, Colors, Tangents, false);
+
+	static const float RowAt[3] = { 0.45f, 0.78f, 1.f };
+	static const float RowAlpha[3] = { 0.f, 0.45f, 1.f };
+	for (int32 Blade = 0; Blade < BladeTrails.Num(); ++Blade)
+	{
+		TArray<FTrailSample>& Samples = BladeTrails[Blade];
+		if (Blade < NumBlades)
+		{
+			float Strength = 0.f;
+			if (Samples.Num() > 0)
+			{
+				const FTrailSample& Prev = Samples.Last();
+				const float Dt = FMath::Max(T - Prev.Time, 1e-3f);
+				const float Speed = FVector::Dist(Tips[Blade], Prev.Tip) / Dt;
+				Strength = FMath::Clamp((Speed - TrailMinSpeed) / FMath::Max(TrailFullSpeed - TrailMinSpeed, 1.f), 0.f, 1.f);
+			}
+			Samples.Add({ T, Bases[Blade], Tips[Blade], Strength });
+		}
+		Samples.RemoveAll([&](const FTrailSample& S) { return T - S.Time > TrailLifetime; });
+
+		float MaxStrength = 0.f;
+		for (const FTrailSample& S : Samples)
+		{
+			MaxStrength = FMath::Max(MaxStrength, S.Strength);
+		}
+		if (Samples.Num() < 2 || MaxStrength <= 0.01f)
+		{
+			SaberTrail->ClearMeshSection(Blade);
+			continue;
+		}
+
+		// Three rows per sample (mid-blade -> 3/4 -> tip): brightest at the tip, fading toward the hilt and with age.
+		TArray<FVector> Verts;
+		TArray<int32> Tris;
+		TArray<FVector> Normals;
+		TArray<FVector2D> UVs;
+		TArray<FLinearColor> Colors;
+		TArray<FProcMeshTangent> Tangents;
+		const int32 N = Samples.Num();
+		for (int32 i = 0; i < N; ++i)
+		{
+			const FTrailSample& S = Samples[i];
+			const float Age = FMath::Clamp((T - S.Time) / TrailLifetime, 0.f, 1.f);
+			const float A = FMath::Square(1.f - Age) * S.Strength;
+			for (int32 r = 0; r < 3; ++r)
+			{
+				Verts.Add(FMath::Lerp(S.Base, S.Tip, RowAt[r]));
+				Colors.Add(FLinearColor(1.f, 1.f, 1.f, A * RowAlpha[r]));
+				UVs.Add(FVector2D(Age, RowAt[r]));
+				Normals.Add(FVector::UpVector);
+			}
+			if (i > 0)
+			{
+				for (int32 r = 0; r < 2; ++r)
+				{
+					const int32 P0 = (i - 1) * 3 + r, P1 = P0 + 1, C0 = i * 3 + r, C1 = C0 + 1;
+					Tris.Append({ P0, C0, P1, P1, C0, C1 });
+				}
+			}
+		}
+		SaberTrail->CreateMeshSection_LinearColor(Blade, Verts, Tris, Normals, UVs, Colors, Tangents, false);
+		if (TrailMaterial)
+		{
+			UMaterialInstanceDynamic* MID = Cast<UMaterialInstanceDynamic>(SaberTrail->GetMaterial(Blade));
+			if (!MID || MID->Parent != TrailMaterial)
+			{
+				MID = UMaterialInstanceDynamic::Create(TrailMaterial, this);
+				SaberTrail->SetMaterial(Blade, MID);
+			}
+			if (BladeColors.IsValidIndex(Blade))
+			{
+				MID->SetVectorParameterValue(TEXT("BladeColor"), BladeColors[Blade]);
+			}
+		}
+	}
 }

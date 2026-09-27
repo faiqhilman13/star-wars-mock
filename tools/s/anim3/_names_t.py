@@ -1,0 +1,4 @@
+NAME="d_c1"
+FRAMES=[0,5,11]
+FIRST=True
+PARTS="bfa"

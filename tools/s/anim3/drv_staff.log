@@ -1,0 +1,48 @@
+s_c1: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 102s err=None
+s_c1: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 81s err=None
+s_c1: done [24, 25, 26] in 23s err=None
+CLIP_OK s_c1
+  bad output: /Game/Jedi/Maps/Lvl_JediArena.Lvl_JediArena:PersistentLevel.BP_GripTest_C_UAID_D8BBC102E1FDCD0503_1297333191.BillboardComponent_13 is not valid Object for property 'instance'
+/Game/Jedi/Maps/Lvl_JediArena.Lvl_JediArena:PersistentLevel.BP_GripTest_C_UAID_D8BBC102E1FDCD0503_1297333191.BillboardComponent_26 is not valid Object for property 'instance'
+/Game/Jedi/Maps/Lvl_JediArena.Lvl_JediArena:PersistentLevel.BP_GripTest_C_UAID_D8BBC102E1FDCF0503_1482041564.BillboardComponent_24 is not valid Object for property 'instance'
+/Game/Jedi/Maps/Lvl_JediArena.Lvl_JediArena:PersistentLevel.BP_Lightsaber_C_UAID_D8BBC102E1FDCD0503_1718477206.BillboardComponent_15 is not valid Object for property 'instance'
+
+s_c2: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 101s err=None
+s_c2: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 78s err=None
+s_c2: done [24, 25, 26, 27] in 27s err=None
+CLIP_OK s_c2
+s_c3: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 139s err=None
+s_c3: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 81s err=None
+s_c3: done [24, 25, 26, 27, 28] in 35s err=None
+CLIP_OK s_c3
+s_c4: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 100s err=None
+  bad output: Games\UE_5.8\Engine\Binaries\ThirdParty\Python3\Win64\Lib\http\client.py", line 1390, in getresponse
+    response.begin()
+  File "C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\ThirdParty\Python3\Win64\Lib\http\client.py", line 325, in begin
+    version, status, reason = self._read_status()
+                              ^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\ThirdParty\Python3\Win64\Lib\http\client.py", line 286, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\ThirdParty\Python3\Win64\Lib\socket.py", line 706, in readinto
+    return self._sock.recv_into(b)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+TimeoutError: timed out
+
+s_c4: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 77s err=None
+s_c4: done [24, 25, 26] in 20s err=None
+CLIP_OK s_c4
+s_block: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 103s err=None
+s_block: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 75s err=None
+s_block: done [24, 25, 26, 27, 28, 29, 30] in 47s err=None
+CLIP_OK s_block
+s_run: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 104s err=None
+s_run: done [12, 13, 14, 15, 16, 17, 18, 19, 20] in 59s err=None
+CLIP_OK s_run
+s_idle: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 101s err=None
+s_idle: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 77s err=None
+s_idle: done [24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35] in 79s err=None
+s_idle: done [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47] in 81s err=None
+s_idle: done [48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59] in 81s err=None
+s_idle: done [60] in 10s err=None
+CLIP_OK s_idle

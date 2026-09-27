@@ -1,0 +1,10 @@
+# Dual wield (Jar'Kai) set (/Game/Jedi/Anims), 30 fps, root motion off. R saber: hand_r (-7,2,0) (35,0,180); L saber: hand_l (7,-2,0) (35,0,0).
+# Contact windows = seconds where any blade tip moves >=1500 cm/s and is >=40 cm in front within +-55deg of forward.
+# Combos start and end on the set's Idle frame 0. chain = earliest sensible time to chain the next combo (after last strike +0.1 s, or after the spin settles).
+AS_Dual_Idle | 2.000 s (60 f, loop) | right blade high, left blade low | contacts: none | chain: n/a
+AS_Dual_Run | 0.667 s (20 f, loop) | authored ground speed 680 cm/s, both blades trailing | contacts: none | chain: n/a
+AS_Dual_Block | 1.000 s (30 f, loop) | crossed-blades X guard | contacts: none | chain: n/a
+AS_Dual_Combo1 | 0.733 s (22 f) | contacts: 0.100-0.233 (L-saber+R-blade1), 0.300-0.400 (L-saber+R-blade1) | peak tip 4499 cm/s in contact (clip max 5150) | chain: 0.500 s
+AS_Dual_Combo2 | 0.667 s (20 f) | contacts: 0.000-0.067 (L-saber), 0.200-0.300 (L-saber+R-blade1) | recovery sweeps: 0.400-0.500 | peak tip 4983 cm/s in contact (clip max 4983) | chain: 0.400 s
+AS_Dual_Combo3 | 0.933 s (28 f) | contacts: 0.033-0.100 (L-saber), 0.133-0.233 (R-blade1), 0.267-0.367 (L-saber), 0.400-0.500 (R-blade1), 0.533-0.667 (L-saber), 0.700-0.733 (R-blade1) | recovery sweeps: 0.833-0.867 | peak tip 3985 cm/s in contact (clip max 4028) | chain: 0.833 s
+AS_Dual_Combo4 | 0.733 s (22 f) | contacts: 0.000-0.033 (L-saber), 0.200-0.300 (L-saber+R-blade1) | recovery sweeps: 0.400-0.433 | peak tip 3728 cm/s in contact (clip max 4275) | chain: 0.400 s

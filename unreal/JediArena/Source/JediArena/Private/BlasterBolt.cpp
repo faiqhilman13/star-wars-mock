@@ -1,4 +1,5 @@
 #include "BlasterBolt.h"
+#include "JediDamageable.h"
 
 #include "Components/PointLightComponent.h"
 #include "Components/SphereComponent.h"
@@ -112,9 +113,14 @@ void ABlasterBolt::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* Other,
 	{
 		return; // pass through triggers, VFX actors, etc.
 	}
+	// Undeflected horde fire flies through the shooter's allies (droids don't shoot each other).
+	if (!bDeflected && Shooter.IsValid() && Cast<IJediDamageable>(Shooter.Get()) && Cast<IJediDamageable>(Other))
+	{
+		return;
+	}
 
 	const FVector Loc = Sweep.bBlockingHit ? FVector(Sweep.ImpactPoint) : GetActorLocation();
-	AJediCharacter::DamageActor(Other, Damage, Shooter.Get() ? Shooter.Get() : this, Loc, GetDirection() * 250.f + FVector(0.f, 0.f, 80.f));
+	AJediCharacter::DamageActor(Other, Damage, Shooter.Get() ? Shooter.Get() : this, Loc, GetDirection() * 250.f + FVector(0.f, 0.f, 80.f), EJediHitKind::Bolt);
 	Impact(Loc, -GetDirection());
 }
 
