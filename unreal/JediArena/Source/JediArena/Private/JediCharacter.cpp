@@ -45,6 +45,8 @@
 #include "AssetImportTask.h"
 #include "Factories/FbxImportUI.h"
 #include "Factories/FbxSkeletalMeshImportData.h"
+#include "Factories/FbxStaticMeshImportData.h"
+#include "Engine/StaticMesh.h"
 #include "Animation/Skeleton.h"
 #include "HAL/FileManager.h"
 #include "PhysicsEngine/PhysicsAsset.h"
@@ -487,6 +489,62 @@ static FAutoConsoleCommand GJediImportSkeletalCmd(
 			Package->MarkPackageDirty();
 		}
 		UE_LOG(LogTemp, Log, TEXT("jedi.ImportSkeletal: %s -> %s"), *Args[0], Asset ? *Asset->GetPathName() : TEXT("FAILED"));
+	}));
+#endif
+
+#if WITH_EDITOR
+// Editor helper: jedi.ImportStatic <FbxFile> <ContentFolder> <AssetName>
+static FAutoConsoleCommand GJediImportStaticCmd(
+	TEXT("jedi.ImportStatic"),
+	TEXT("Imports an FBX as a static mesh (scene units converted to centimetres)."),
+	FConsoleCommandWithArgsDelegate::CreateLambda([](const TArray<FString>& Args)
+	{
+		if (Args.Num() < 3)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("jedi.ImportStatic: need <FbxFile> <ContentFolder> <AssetName>"));
+			return;
+		}
+		UFbxImportUI* UI = NewObject<UFbxImportUI>(GetTransientPackage());
+		UI->bIsObjImport = false;
+		UI->MeshTypeToImport = FBXIT_StaticMesh;
+		UI->OriginalImportType = FBXIT_StaticMesh;
+		UI->bImportAsSkeletal = false;
+		UI->bImportMesh = true;
+		UI->bImportAnimations = false;
+		UI->bImportMaterials = false;
+		UI->bImportTextures = false;
+		UI->bAutomatedImportShouldDetectType = false;
+		UI->StaticMeshImportData->bConvertScene = true;
+		UI->StaticMeshImportData->bConvertSceneUnit = true;
+		UI->StaticMeshImportData->bCombineMeshes = true;
+
+		UAssetImportTask* Task = NewObject<UAssetImportTask>(GetTransientPackage());
+		Task->AddToRoot();
+		Task->Filename = Args[0];
+		Task->DestinationPath = Args[1];
+		Task->DestinationName = Args[2];
+		Task->bAutomated = true;
+		Task->bReplaceExisting = true;
+		Task->bSave = false;
+		Task->Options = UI;
+
+		UFbxFactory* Factory = NewObject<UFbxFactory>(GetTransientPackage());
+		Factory->AddToRoot();
+		Factory->SetAssetImportTask(Task);
+		Factory->SetDetectImportTypeOnImport(false);
+
+		UPackage* Package = CreatePackage(*(Args[1] / Args[2]));
+		bool bCanceled = false;
+		UObject* Asset = Factory->ImportObject(UStaticMesh::StaticClass(), Package, FName(*Args[2]), RF_Public | RF_Standalone,
+			Args[0], nullptr, bCanceled);
+		Factory->RemoveFromRoot();
+		Task->RemoveFromRoot();
+		if (Asset)
+		{
+			FAssetRegistryModule::AssetCreated(Asset);
+			Package->MarkPackageDirty();
+		}
+		UE_LOG(LogTemp, Log, TEXT("jedi.ImportStatic: %s -> %s"), *Args[0], Asset ? *Asset->GetPathName() : TEXT("FAILED"));
 	}));
 #endif
 
@@ -1042,6 +1100,17 @@ void AJediCharacter::Tick(float DeltaSeconds)
 		}
 	}
 
+	// Out of combat for a moment? Heal up.
+	if (!bDead && CurrentHP < MaxHP && Now() - LastDamageTime >= HealthRegenDelay)
+	{
+		CurrentHP = FMath::Min(MaxHP, CurrentHP + HealthRegenRate * DeltaSeconds);
+		RegenBarAccum += DeltaSeconds;
+		if (RegenBarAccum >= 0.1f || CurrentHP >= MaxHP)
+		{
+			RegenBarAccum = 0.f;
+			UpdateBars();
+		}
+	}
 	SyncSecondaryBlades();
 	TickLean(DeltaSeconds);
 	TickStance();
@@ -1784,6 +1853,7 @@ float AJediCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageE
 	}
 
 	const float Applied = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	LastDamageTime = Now();
 	UE_LOG(LogTemp, Log, TEXT("Jedi: HIT by %s for %.2f (blocking=%d)"), *GetNameSafe(DamageCauser), DamageAmount, bBlocking ? 1 : 0);
 	CurrentHP = FMath::Max(0.f, CurrentHP - DamageAmount);
 	if (HurtShake)

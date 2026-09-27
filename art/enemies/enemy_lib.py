@@ -356,3 +356,67 @@ class Kit:
         stats["slots"] = [m.name for m in mesh.data.materials]
         print("EXPORTED", json.dumps(stats), flush=True)
         return stats
+
+
+class StaticKit(Kit):
+    """Same primitive builders, but for rigid static meshes (no rig, no weights). Each export() writes one
+    FBX from the parts built since the last export."""
+
+    def __init__(self, name, slots):
+        bpy.ops.wm.read_factory_settings(use_empty=True)
+        self.rig = None
+        self.body = None
+        self.name = name
+        self.parts = []
+        self.mats = []
+        for n, col, metal, rough in slots:
+            m = bpy.data.materials.new(n)
+            m.use_nodes = True
+            bsdf = m.node_tree.nodes.get("Principled BSDF")
+            bsdf.inputs["Base Color"].default_value = (*col, 1)
+            bsdf.inputs["Metallic"].default_value = metal
+            bsdf.inputs["Roughness"].default_value = rough
+            m.diffuse_color = (*col, 1)
+            self.mats.append(m)
+
+    def _finish(self, bm, bone, slot, smooth, name):
+        me = bpy.data.meshes.new(name)
+        bm.to_mesh(me)
+        bm.free()
+        ob = bpy.data.objects.new(name, me)
+        bpy.context.scene.collection.objects.link(ob)
+        for m in self.mats:
+            me.materials.append(m)
+        for p in me.polygons:
+            p.material_index = slot
+            p.use_smooth = smooth
+        self.parts.append(ob)
+        return ob
+
+    def export_static(self, mesh_name, render_tag=None):
+        if render_tag:
+            self.render(render_tag, views=((0, -2.6, 0.8, 0), (1.9, -1.9, 1.1, 45), (0, 2.6, 0.8, 180)))
+        bpy.ops.object.select_all(action='DESELECT')
+        for o in self.parts:
+            o.select_set(True)
+        bpy.context.view_layer.objects.active = self.parts[0]
+        bpy.ops.object.join()
+        mesh = bpy.context.object
+        mesh.name = mesh_name
+        bpy.ops.object.mode_set(mode='EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.uv.smart_project(angle_limit=math.radians(66), island_margin=0.02)
+        bpy.ops.object.mode_set(mode='OBJECT')
+        OUT.mkdir(parents=True, exist_ok=True)
+        path = OUT / f"{mesh_name}.fbx"
+        bpy.ops.object.select_all(action='DESELECT')
+        mesh.select_set(True)
+        bpy.ops.export_scene.fbx(filepath=str(path), use_selection=True, object_types={'MESH'}, mesh_smooth_type='FACE',
+                                 axis_forward='-Y', axis_up='Z', apply_unit_scale=True, apply_scale_options='FBX_SCALE_UNITS',
+                                 bake_space_transform=True)
+        stats = {"mesh": mesh_name, "tris": sum(len(p.vertices) - 2 for p in mesh.data.polygons),
+                 "dims_m": [round(x, 3) for x in mesh.dimensions], "fbx": str(path)}
+        print("EXPORTED", json.dumps(stats), flush=True)
+        bpy.data.objects.remove(mesh, do_unlink=True)
+        self.parts = []
+        return stats

@@ -86,6 +86,7 @@ protected:
 	UPROPERTY() TObjectPtr<USkeletalMesh> BulwarkModel;
 	UPROPERTY() TObjectPtr<USkeletalMesh> JetGhostModel;
 	UPROPERTY() TObjectPtr<USkeletalMesh> WardenModel;
+	UPROPERTY(Transient) TArray<TObjectPtr<USoundBase>> DeathSounds;
 	UPROPERTY() TObjectPtr<UClass> AnimClass;
 	UPROPERTY() TObjectPtr<UMaterialInterface> SurfaceMat;
 	UPROPERTY() TObjectPtr<UMaterialInterface> WaveMat;
@@ -135,6 +136,7 @@ private:
 	void BreakShield(float Seconds);
 	void Say(const TCHAR* Line, float Seconds = 1.6f);
 	void Say(const TArray<const TCHAR*>& Lines, float Chance);
+	void PlayDeathSound();
 	void SetRollerDeployed(float Alpha);
 	float Now() const;
 

@@ -37,3 +37,9 @@ pixabay_timmysnake_laser_sword.mp3 | https://pixabay.com/sound-effects/film-spec
   SW_Saber_Clash_Rec1..4  recorded clashes cut from pixabay_montogoronto_energy_weapon_pack at 14.33/15.85/17.90/36.46 s (tools/extract_clash.py)
   SW_Saber_Hit_Rec1..3    recorded impacts from the same pack at 16.78/27.62/31.59 s, cut short and pitched 0.93x (tools/extract_clash.py)
   SW_Blaster_Deflect_Rec  recorded clash (14.33 s) + synthesized ricochet wire chirp (tools/synth_blaster.py)
+
+Enemy death sounds (audio/wav_deaths, /Game/Jedi/Audio/Deaths): no third-party audio.
+  Voice takes are generated locally with the built-in Windows voices (Microsoft David / Zira Desktop,
+  audio/tools/tts_lines.ps1), then run through ffmpeg character filters and mixed with synthesized
+  servo whines, metal clatter, comm squelch, jetpack sputter and beeps (audio/tools/death_sounds.py).
+  SW_Death_Droid_1..7, SW_Death_Trooper_1..4, SW_Death_Jet_1..3, SW_Death_Warden_1..2, SW_Death_Roller_1..3

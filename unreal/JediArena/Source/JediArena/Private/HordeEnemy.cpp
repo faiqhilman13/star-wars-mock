@@ -380,23 +380,63 @@ void AHordeEnemy::BuildLooks()
 		UMaterialInstanceDynamic* Bronze = MakeMat(FLinearColor(0.5f, 0.3f, 0.12f), 0.35f, 0.9f);
 		UMaterialInstanceDynamic* Dark = MakeMat(FLinearColor(0.04f, 0.035f, 0.03f), 0.4f, 0.8f);
 		UMaterialInstanceDynamic* Eye = MakeMat(FLinearColor::Black, 0.4f, 0.f, FLinearColor(7.f, 0.3f, 0.1f));
-		RollerBall = AddPart(SphereMesh, Root, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, FVector(1.2f), Bronze);
-		AddPart(CylinderMesh, RollerBall, NAME_None, FVector::ZeroVector, FRotator(90.f, 0.f, 0.f), FVector(1.24f, 1.24f, 0.1f), Dark);
+		UMaterialInstanceDynamic* Gold = MakeMat(FLinearColor(0.75f, 0.6f, 0.35f), 0.3f, 0.9f);
+		// Custom meshes (art/enemies/roller.py); the primitive build below is the fallback.
+		UStaticMesh* BallModel = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Jedi/Enemies/Roller/SM_RollerBall.SM_RollerBall"));
+		UStaticMesh* HeadModel = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Jedi/Enemies/Roller/SM_RollerHead.SM_RollerHead"));
+		UStaticMesh* LegModel = LoadObject<UStaticMesh>(nullptr, TEXT("/Game/Jedi/Enemies/Roller/SM_RollerLeg.SM_RollerLeg"));
+		auto Paint = [&](UStaticMeshComponent* C)
+		{
+			if (C)
+			{
+				// Meshes only carry the slots they use, so match by name rather than index.
+				const TArray<FName> Names = C->GetMaterialSlotNames();
+				for (int32 i = 0; i < Names.Num(); ++i)
+				{
+					const FString N = Names[i].ToString();
+					C->SetMaterial(i, N == TEXT("Frame") ? Dark : N == TEXT("Lamp") ? Eye : N == TEXT("Trim") ? Gold : Bronze);
+				}
+			}
+		};
 
 		RollerTurret = NewObject<USceneComponent>(this);
 		RollerTurret->RegisterComponent();
 		RollerTurret->AttachToComponent(Root, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		RollerTurret->SetRelativeLocation(FVector(0.f, 0.f, 30.f));
-		AddPart(SphereMesh, RollerTurret, NAME_None, FVector(0.f, 0.f, 30.f), FRotator::ZeroRotator, FVector(0.75f, 0.75f, 0.5f), Bronze);
-		AddPart(SphereMesh, RollerTurret, NAME_None, FVector(34.f, 0.f, 38.f), FRotator::ZeroRotator, FVector(0.1f), Eye);
-		Muzzle = AddPart(CylinderMesh, RollerTurret, NAME_None, FVector(42.f, -15.f, 26.f), Forward, FVector(0.07f, 0.07f, 0.5f), Dark);
-		AddPart(CylinderMesh, RollerTurret, NAME_None, FVector(42.f, 15.f, 26.f), Forward, FVector(0.07f, 0.07f, 0.5f), Dark);
-		for (int32 i = 0; i < 3; ++i)
+		if (BallModel && HeadModel && LegModel)
 		{
-			const float Yaw = 60.f + i * 120.f;
-			const FVector Dir = FRotator(0.f, Yaw, 0.f).Vector();
-			RollerLegs.Add(AddPart(CylinderMesh, Root, NAME_None, Dir * 42.f + FVector(0.f, 0.f, -28.f), FRotator(0.f, Yaw, 0.f) + FRotator(35.f, 0.f, 0.f),
-				FVector(0.08f, 0.08f, 0.8f), Dark));
+			RollerBall = AddPart(BallModel, Root, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, FVector(0.9f), Bronze);
+			Paint(RollerBall);
+			Paint(AddPart(HeadModel, RollerTurret, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, FVector(1.f), Bronze));
+			Muzzle = AddPart(SphereMesh, RollerTurret, NAME_None, FVector(50.f, -30.f, 22.f), FRotator::ZeroRotator, FVector(0.05f), Dark);
+			if (Muzzle)
+			{
+				Muzzle->SetHiddenInGame(true); // survives the turret's propagated SetVisibility
+			}
+			for (int32 i = 0; i < 3; ++i)
+			{
+				const float Yaw = 60.f + i * 120.f;
+				const FVector Dir = FRotator(0.f, Yaw, 0.f).Vector();
+				UStaticMeshComponent* Leg = AddPart(LegModel, Root, NAME_None, Dir * 28.f + FVector(0.f, 0.f, -18.f), FRotator(0.f, Yaw, 0.f), FVector(1.f), Dark);
+				Paint(Leg);
+				RollerLegs.Add(Leg);
+			}
+		}
+		else
+		{
+			RollerBall = AddPart(SphereMesh, Root, NAME_None, FVector::ZeroVector, FRotator::ZeroRotator, FVector(1.2f), Bronze);
+			AddPart(CylinderMesh, RollerBall, NAME_None, FVector::ZeroVector, FRotator(90.f, 0.f, 0.f), FVector(1.24f, 1.24f, 0.1f), Dark);
+			AddPart(SphereMesh, RollerTurret, NAME_None, FVector(0.f, 0.f, 30.f), FRotator::ZeroRotator, FVector(0.75f, 0.75f, 0.5f), Bronze);
+			AddPart(SphereMesh, RollerTurret, NAME_None, FVector(34.f, 0.f, 38.f), FRotator::ZeroRotator, FVector(0.1f), Eye);
+			Muzzle = AddPart(CylinderMesh, RollerTurret, NAME_None, FVector(42.f, -15.f, 26.f), Forward, FVector(0.07f, 0.07f, 0.5f), Dark);
+			AddPart(CylinderMesh, RollerTurret, NAME_None, FVector(42.f, 15.f, 26.f), Forward, FVector(0.07f, 0.07f, 0.5f), Dark);
+			for (int32 i = 0; i < 3; ++i)
+			{
+				const float Yaw = 60.f + i * 120.f;
+				const FVector Dir = FRotator(0.f, Yaw, 0.f).Vector();
+				RollerLegs.Add(AddPart(CylinderMesh, Root, NAME_None, Dir * 42.f + FVector(0.f, 0.f, -28.f), FRotator(0.f, Yaw, 0.f) + FRotator(35.f, 0.f, 0.f),
+					FVector(0.08f, 0.08f, 0.8f), Dark));
+			}
 		}
 		if (WaveMat)
 		{
@@ -463,6 +503,26 @@ void AHordeEnemy::BeginPlay()
 	NextStrafeFlip = T + FMath::FRandRange(2.f, 5.f);
 	StrafeSign = FMath::RandBool() ? 1.f : -1.f;
 	BuildLooks();
+	{
+		const TCHAR* Prefix = TEXT("Droid");
+		int32 Count = 7;
+		switch (Type)
+		{
+		case EHordeType::Bulwark: Prefix = TEXT("Trooper"); Count = 4; break;
+		case EHordeType::JetGhost: Prefix = TEXT("Jet"); Count = 3; break;
+		case EHordeType::Warden: Prefix = TEXT("Warden"); Count = 2; break;
+		case EHordeType::Roller: Prefix = TEXT("Roller"); Count = 3; break;
+		default: break;
+		}
+		for (int32 i = 1; i <= Count; ++i)
+		{
+			const FString Path = FString::Printf(TEXT("/Game/Jedi/Audio/Deaths/SW_Death_%s_%d.SW_Death_%s_%d"), Prefix, i, Prefix, i);
+			if (USoundBase* Snd = LoadObject<USoundBase>(nullptr, *Path))
+			{
+				DeathSounds.Add(Snd);
+			}
+		}
+	}
 
 	switch (Type)
 	{
@@ -510,6 +570,35 @@ void AHordeEnemy::Say(const TCHAR* Line, float Seconds)
 		Chatter->SetVisibility(true);
 		ChatterUntil = Now() + Seconds;
 	}
+}
+
+void AHordeEnemy::PlayDeathSound()
+{
+	if (DeathSounds.Num() == 0)
+	{
+		return;
+	}
+	// A Force Storm can drop thirty droids in one frame: let a few voices through, not a wall of noise.
+	static TArray<double> Recent;
+	const double T = Now();
+	Recent.RemoveAll([T](double X) { return T - X > 0.35 || X > T; });
+	const int32 Allowed = Type == EHordeType::Clanker ? 3 : 4;
+	if (Recent.Num() >= Allowed)
+	{
+		return;
+	}
+	Recent.Add(T);
+	// Never the same clip twice in a row: a pile of identical screams just phases into mush.
+	static TWeakObjectPtr<USoundBase> LastPlayed;
+	int32 Pick = FMath::RandRange(0, DeathSounds.Num() - 1);
+	if (DeathSounds.Num() > 1 && DeathSounds[Pick] == LastPlayed.Get())
+	{
+		Pick = (Pick + 1 + FMath::RandRange(0, DeathSounds.Num() - 2)) % DeathSounds.Num();
+	}
+	USoundBase* Snd = DeathSounds[Pick];
+	LastPlayed = Snd;
+	UE_LOG(LogTemp, Verbose, TEXT("HordeEnemy death sound: %s"), *Snd->GetName());
+	UGameplayStatics::PlaySoundAtLocation(this, Snd, GetActorLocation(), Type == EHordeType::Clanker ? 0.9f : 1.f, FMath::FRandRange(0.94f, 1.08f));
 }
 
 void AHordeEnemy::Say(const TArray<const TCHAR*>& Lines, float Chance)
@@ -1186,6 +1275,7 @@ void AHordeEnemy::Die(AActor* Killer, const FVector& Impulse, EJediHitKind Kind)
 	{
 		Say(ClankerDeathLines, 0.22f);
 	}
+	PlayDeathSound();
 
 	UCharacterMovementComponent* Move = GetCharacterMovement();
 	Move->StopMovementImmediately();

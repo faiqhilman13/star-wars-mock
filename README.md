@@ -12,7 +12,7 @@ Third-person lightsaber + Force combat: a Dynasty-Warriors-style horde arena whe
 | `unreal/JediArena/` | The Unreal project: `Source/`, `Config/`, `Content/`, `ArtSource/` and the `.uproject` |
 | `tools/` | The MCP client (`ue.py`), helper shell scripts, and the editor build scripts in `tools/s/` |
 | `audio/` | Sound build scripts (`audio/tools/`), the synthesized placeholder WAVs, and licence and source notes |
-| `art/` | Blender sources: the hilt and the Grey Warden character |
+| `art/` | Blender sources: the hilt, the Grey Warden character and the horde enemies (`art/enemies/`) |
 | `collab/` | The Codex ↔ Claude mailbox and Codex's asset deliveries |
 
 **Syncing the Unreal project:**
@@ -46,6 +46,7 @@ Third-person lightsaber + Force combat: a Dynasty-Warriors-style horde arena whe
 | **Force Storm** (when the Force Surge meter is full) | C | Left stick click |
 
 - The blue bar under your health is your Force.
+- **Health regenerates** at 2.5 HP/s once you go 3 s without taking a hit (`HealthRegenDelay` / `HealthRegenRate` in BP_Jedi).
 - Blocking costs 8 Force per hit and stops regeneration. If you run out, your guard breaks.
 - While blocking, the Jedi turns to face the nearest attacker. Each swing snaps toward the nearest enemy in front of you.
 - Push enemies off the platform into the lava.
@@ -81,6 +82,15 @@ Third-person lightsaber + Force combat: a Dynasty-Warriors-style horde arena whe
 | **Magna Wardens** | Guard with electrostaffs. Parry their strikes |
 | **Sith Acolytes** | Officers |
 | **Scrap Colossus** (`ABossWalker`) | The boss: a junk chicken-walker. Its glowing knees are the weak points; it collapses at every 25% of health and rages below 50% |
+
+**Models and sounds**
+- Every enemy model is built in Blender by a script in `art/enemies/` on top of `enemy_lib.py`:
+  - `clanker.py` and `trooper.py` (Bulwark, Jet Ghost, Warden) make skinned meshes on the mannequin skeleton, imported with `jedi.ImportSkeletal`.
+  - `roller.py` makes three static meshes for the Buzz-Roller (armoured ball, turret head, spider leg), imported with `jedi.ImportStatic <fbx> <folder> <name>`.
+- Each enemy type has its own death sounds (`/Game/Jedi/Audio/Deaths`):
+  - Droids squawk, troopers cut out over their comms, Jet Ghosts sputter and fall, Wardens groan, and Rollers beep and pop.
+  - They're built by `audio/tools/death_sounds.py` from Windows text-to-speech takes (`tts_lines.ps1`) plus synthesized layers.
+  - Playback is throttled, so a Force Storm that drops thirty droids plays a handful of voices, never the same clip twice in a row.
 
 **Code**
 - `AHordeDirector`: waves, attack tokens (only a few enemies shoot or swing at once), KOs, hype and banners.
@@ -142,4 +152,4 @@ Third-person lightsaber + Force combat: a Dynasty-Warriors-style horde arena whe
 - The sword animations are hand-keyed in-editor, so they read well but are simpler than mocap.
 - In the unarmed idle and locomotion, the saber trails down and back.
 - Force push and lightning still use the synthesized placeholder sounds.
-- Enemies are basic melee AI, and there's a single enemy type.
+- In the training arena the enemies are basic melee AI (the horde arena has its own six enemy types).

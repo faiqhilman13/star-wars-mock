@@ -271,6 +271,10 @@ protected:
 
 	// ---------- Tuning ----------
 	UPROPERTY(EditAnywhere, Category = "Jedi|Health") float MaxHP = 12.f;
+	/** Health starts regenerating after this many seconds without taking damage... */
+	UPROPERTY(EditAnywhere, Category = "Jedi|Health") float HealthRegenDelay = 3.f;
+	/** ...at this many HP per second. */
+	UPROPERTY(EditAnywhere, Category = "Jedi|Health") float HealthRegenRate = 2.5f;
 	UPROPERTY(EditAnywhere, Category = "Jedi|Health") float RespawnTime = 3.f;
 
 	UPROPERTY(EditAnywhere, Category = "Jedi|Saber") FVector GripLoc = FVector(-7.f, 2.f, 0.f);
@@ -401,6 +405,8 @@ private:
 	TArray<FVector> LastBladeBases, LastBladeTips;
 	int32 StyleIndex = 0;
 	float Surge = 0.f;
+	float LastDamageTime = -100.f;
+	float RegenBarAccum = 0.f;
 	bool bSurgeAnnounced = false;
 	int32 ComboHits = 0;
 	float ComboLastTime = -100.f;
