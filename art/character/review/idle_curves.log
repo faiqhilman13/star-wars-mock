@@ -1,0 +1,10 @@
+00:01.937  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_pose_review.blend"
+BlenderMCP: cannot start server in background mode (blender -b) - commands would never execute
+BlenderMCP: run Blender with a GUI, or use a virtual display: xvfb-run -a blender
+BlenderMCP addon registered
+[('location', 0, 0.0), ('location', 1, 0.0), ('location', 2, 0.0), ('rotation_euler', 0, 6.123233601181349e-17), ('rotation_euler', 1, -0.0), ('rotation_euler', 2, 0.0), ('scale', 0, 0.009999999776482582), ('scale', 1, 0.009999999776482582), ('scale', 2, 0.009999999776482582)]
+BlenderMCP server stopped
+BlenderMCP addon unregistered
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

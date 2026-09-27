@@ -1,0 +1,46 @@
+[
+  {
+    "role": "Cloth",
+    "size": 2048,
+    "files": [
+      "T_GreyWarden_Cloth_BaseColor.png",
+      "T_GreyWarden_Cloth_Normal.png",
+      "T_GreyWarden_Cloth_ORM.png"
+    ],
+    "normal": "DirectX tangent Y-",
+    "ORM": "linear R=AO G=roughness B=metallic"
+  },
+  {
+    "role": "Armor",
+    "size": 2048,
+    "files": [
+      "T_GreyWarden_Armor_BaseColor.png",
+      "T_GreyWarden_Armor_Normal.png",
+      "T_GreyWarden_Armor_ORM.png"
+    ],
+    "normal": "DirectX tangent Y-",
+    "ORM": "linear R=AO G=roughness B=metallic"
+  },
+  {
+    "role": "Leather",
+    "size": 2048,
+    "files": [
+      "T_GreyWarden_Leather_BaseColor.png",
+      "T_GreyWarden_Leather_Normal.png",
+      "T_GreyWarden_Leather_ORM.png"
+    ],
+    "normal": "DirectX tangent Y-",
+    "ORM": "linear R=AO G=roughness B=metallic"
+  },
+  {
+    "role": "Visor",
+    "size": 2048,
+    "files": [
+      "T_GreyWarden_Visor_BaseColor.png",
+      "T_GreyWarden_Visor_Normal.png",
+      "T_GreyWarden_Visor_ORM.png"
+    ],
+    "normal": "DirectX tangent Y-",
+    "ORM": "linear R=AO G=roughness B=metallic"
+  }
+]

@@ -1,0 +1,46 @@
+{
+  "blend": "C:\\Users\\User\\PROJECTS\\jedi-arena\\art\\character\\CH_GreyWarden_pose_review.blend",
+  "mode": "material",
+  "engine": "cycles",
+  "bbox_min": [
+    -0.29819002747535706,
+    -0.32589903473854065,
+    -0.0078021204099059105
+  ],
+  "bbox_max": [
+    0.48653507232666016,
+    0.493171364068985,
+    1.7723113298416138
+  ],
+  "size_xyz": [
+    0.7847250699996948,
+    0.8190703988075256,
+    1.7801134586334229
+  ],
+  "objects": [
+    "SKM_GreyWarden_Cloth",
+    "SKM_GreyWarden_Armor",
+    "SKM_GreyWarden_Leather",
+    "SKM_GreyWarden_Visor"
+  ],
+  "renders": {
+    "front": {
+      "file": "C:\\Users\\User\\PROJECTS\\jedi-arena\\art\\character\\review\\04_rig\\idle_115\\material_front.png",
+      "az_el_lens": [
+        0,
+        0,
+        0
+      ],
+      "distance": 4.409535199403763
+    },
+    "threequarter": {
+      "file": "C:\\Users\\User\\PROJECTS\\jedi-arena\\art\\character\\review\\04_rig\\idle_115\\material_threequarter.png",
+      "az_el_lens": [
+        35,
+        15,
+        50
+      ],
+      "distance": 3.5208436928482514
+    }
+  }
+}

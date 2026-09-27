@@ -1,0 +1,58 @@
+{
+  "stage": "TECHNICAL IMPORT CANDIDATE; final appearance not accepted",
+  "weight_refinements": {
+    "knee_vertices": 365,
+    "pauldron_vertices": 1378
+  },
+  "bounds_metres": {
+    "min": [
+      -0.5203607678413391,
+      -0.2550310790538788,
+      0.0
+    ],
+    "max": [
+      0.5203607678413391,
+      0.2942615747451782,
+      1.8024141788482666
+    ]
+  },
+  "height_metres": 1.8024141788482666,
+  "materials": [
+    "M_GreyWarden_Cloth_Game",
+    "M_GreyWarden_Armor_Game",
+    "M_GreyWarden_Leather_Game",
+    "M_GreyWarden_Visor_Game"
+  ],
+  "triangles": 59749,
+  "unweighted": 0,
+  "max_influences": 4,
+  "max_weight_sum_error": 5.21540641784668e-08,
+  "uv_out_of_bounds": 0,
+  "export_units": {
+    "scene_unit_metres": 0.01,
+    "mesh_height_in_scene_units": 180.2414093017578,
+    "armature_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "mesh_scale": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "parent_inverse_identity": true,
+    "fbx_unit_scale_factor": [
+      0.9999999776482582
+    ]
+  },
+  "roundtrip": {
+    "missing_or_reparented": [],
+    "max_world_matrix_element_error": 2.86102294921875e-06,
+    "bones": 103,
+    "meshes": 1,
+    "material_slots": 4,
+    "height_metres": 1.8024141788482666
+  },
+  "fbx_sha256": "291009e84d58e5c636175e5b34fa309cd2027fcb98e44966eb0797c5fa0048ac"
+}

@@ -1,0 +1,70 @@
+{
+  "front": {
+    "sheet_box": [
+      35,
+      20,
+      449,
+      913
+    ],
+    "matte_bbox": [
+      16,
+      18,
+      403,
+      877
+    ],
+    "threshold": 180,
+    "interior_highlight_holes_filled": true,
+    "orthographic_claim": "generated reference; side views contain yaw and are not exact orthographic measurements"
+  },
+  "left": {
+    "sheet_box": [
+      451,
+      20,
+      752,
+      913
+    ],
+    "matte_bbox": [
+      21,
+      18,
+      290,
+      875
+    ],
+    "threshold": 180,
+    "interior_highlight_holes_filled": true,
+    "orthographic_claim": "generated reference; side views contain yaw and are not exact orthographic measurements"
+  },
+  "back": {
+    "sheet_box": [
+      754,
+      20,
+      1131,
+      913
+    ],
+    "matte_bbox": [
+      3,
+      17,
+      377,
+      876
+    ],
+    "threshold": 180,
+    "interior_highlight_holes_filled": true,
+    "orthographic_claim": "generated reference; side views contain yaw and are not exact orthographic measurements"
+  },
+  "right": {
+    "sheet_box": [
+      1162,
+      20,
+      1472,
+      913
+    ],
+    "matte_bbox": [
+      0,
+      17,
+      255,
+      876
+    ],
+    "threshold": 180,
+    "interior_highlight_holes_filled": true,
+    "orthographic_claim": "generated reference; side views contain yaw and are not exact orthographic measurements"
+  }
+}

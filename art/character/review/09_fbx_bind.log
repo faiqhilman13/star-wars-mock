@@ -1,0 +1,162 @@
+BlenderMCP: cannot start server in background mode (blender -b) - commands would never execute
+BlenderMCP: run Blender with a GUI, or use a virtual display: xvfb-run -a blender
+BlenderMCP addon registered
+{
+  "models": [
+    {
+      "id": 523534119,
+      "name": "SKM_GreyWarden\u0000\u0001Model",
+      "properties": [
+        [
+          "Lcl Rotation",
+          [
+            0.0,
+            -0.0,
+            180.00000500895632
+          ]
+        ]
+      ]
+    },
+    {
+      "id": 651285794,
+      "name": "root\u0000\u0001Model",
+      "properties": [
+        [
+          "Lcl Rotation",
+          [
+            0.0,
+            -0.0,
+            180.00000500895632
+          ]
+        ]
+      ]
+    },
+    {
+      "id": 624261969,
+      "name": "ik_foot_root\u0000\u0001Model",
+      "properties": []
+    },
+    {
+      "id": 54398863,
+      "name": "ik_hand_root\u0000\u0001Model",
+      "properties": []
+    }
+  ],
+  "poses": [
+    {
+      "name": "SKM_GreyWarden\u0000\u0001Model",
+      "matrix": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "name": "root\u0000\u0001Model",
+      "matrix": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "name": "ik_foot_root\u0000\u0001Model",
+      "matrix": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    },
+    {
+      "name": "ik_hand_root\u0000\u0001Model",
+      "matrix": [
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ]
+    }
+  ],
+  "parents": [
+    {
+      "child": "SKM_GreyWarden\u0000\u0001Model",
+      "parent": 0
+    },
+    {
+      "child": "root\u0000\u0001Model",
+      "parent": 0
+    },
+    {
+      "child": "ik_foot_root\u0000\u0001Model",
+      "parent": "root\u0000\u0001Model"
+    },
+    {
+      "child": "ik_hand_root\u0000\u0001Model",
+      "parent": "root\u0000\u0001Model"
+    },
+    {
+      "child": "ik_foot_root\u0000\u0001Model",
+      "parent": 537063258
+    },
+    {
+      "child": "ik_hand_root\u0000\u0001Model",
+      "parent": 616690239
+    }
+  ]
+}
+BlenderMCP server stopped
+BlenderMCP addon unregistered
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

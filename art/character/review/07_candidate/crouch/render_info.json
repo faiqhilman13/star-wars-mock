@@ -1,0 +1,37 @@
+{
+  "blend": "C:\\Users\\User\\PROJECTS\\jedi-arena\\art\\character\\review\\07_candidate\\crouch.blend",
+  "mode": "material",
+  "engine": "cycles",
+  "bbox_min": [
+    -0.5203607678413391,
+    -0.5554884076118469,
+    0.21877285838127136
+  ],
+  "bbox_max": [
+    0.5203607678413391,
+    0.3212754726409912,
+    1.749316930770874
+  ],
+  "size_xyz": [
+    1.0407215356826782,
+    0.8767638802528381,
+    1.5305440425872803
+  ],
+  "objects": [
+    "SKM_GreyWarden_Cloth",
+    "SKM_GreyWarden_Armor",
+    "SKM_GreyWarden_Leather",
+    "SKM_GreyWarden_Visor"
+  ],
+  "renders": {
+    "threequarter": {
+      "file": "C:\\Users\\User\\PROJECTS\\jedi-arena\\art\\character\\review\\07_candidate\\crouch\\material_threequarter.png",
+      "az_el_lens": [
+        35,
+        15,
+        50
+      ],
+      "distance": 3.3420815575453964
+    }
+  }
+}

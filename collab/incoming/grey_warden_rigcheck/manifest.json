@@ -1,0 +1,69 @@
+{
+  "stage": "technical import candidate, appearance WIP",
+  "files": {
+    "NOTES.md": {
+      "bytes": 3539,
+      "sha256": "48579d0f49770b2ed2049f005338793a3cb3c4c8ba30e5e96564f514dbc7ae54"
+    },
+    "preview.png": {
+      "bytes": 639694,
+      "sha256": "a55f169b061cc8cdd31884c87feab66fd1ed18c0f1c8930c7cf8e35c09f93694"
+    },
+    "SKM_GreyWarden.fbx": {
+      "bytes": 2633836,
+      "sha256": "4666eeb26cb8577b06845ed9773a0cf14aee8710eb487aa60c1254dbae29c580"
+    },
+    "validation.json": {
+      "bytes": 945,
+      "sha256": "3af73776cd8011834c1875c8f49ab1a93747d5c6ff9b0e27be51ea440942c014"
+    },
+    "textures/T_GreyWarden_Armor_BaseColor.png": {
+      "bytes": 1618707,
+      "sha256": "3b822f8067ab58029efd5be345de9249adc1a8dac584f9aeefce9daab5349d5d"
+    },
+    "textures/T_GreyWarden_Armor_Normal.png": {
+      "bytes": 1642421,
+      "sha256": "c90085d96e85210211e233ff836e0caedd81d3cdb5d6455b64691a080d121695"
+    },
+    "textures/T_GreyWarden_Armor_ORM.png": {
+      "bytes": 2564478,
+      "sha256": "462e73c783eb205ca1b307516df503804ec65a636a17cb0e74fdaadbf1041510"
+    },
+    "textures/T_GreyWarden_Cloth_BaseColor.png": {
+      "bytes": 1923665,
+      "sha256": "8e8f52fe3f01e58f66b2a12b2bcbbe207c7180c1cfea0486938e9a2bb15499c8"
+    },
+    "textures/T_GreyWarden_Cloth_Normal.png": {
+      "bytes": 1832006,
+      "sha256": "08fb8223d7c10b5b037cf721afaa56ce24bcf5d8f9e97304dc831f9fad61ac10"
+    },
+    "textures/T_GreyWarden_Cloth_ORM.png": {
+      "bytes": 3495293,
+      "sha256": "b1193b0bba398cfb5417052e6f9caa9310da7d6c197ebcdcf5dde3c5c5ed172d"
+    },
+    "textures/T_GreyWarden_Leather_BaseColor.png": {
+      "bytes": 1523727,
+      "sha256": "abf86df87205a666c8b200e913ce560d6e613e2d4849bb9e78665c949168efbb"
+    },
+    "textures/T_GreyWarden_Leather_Normal.png": {
+      "bytes": 991134,
+      "sha256": "c1dfc0a00b5f78155b92833fc2e52480fff1c6c791539e4cf07aa52f3435d534"
+    },
+    "textures/T_GreyWarden_Leather_ORM.png": {
+      "bytes": 2872139,
+      "sha256": "d029e0496ac32beca91439034ef25b34ce0c0f03f1edf8f7de6398b886740be2"
+    },
+    "textures/T_GreyWarden_Visor_BaseColor.png": {
+      "bytes": 322520,
+      "sha256": "1d38c6d4382d272b7683ab6548e7565d2dbb4f47e6cd3580b70786ab0b844a38"
+    },
+    "textures/T_GreyWarden_Visor_Normal.png": {
+      "bytes": 422119,
+      "sha256": "1afa06646d9dbff4fad0fbb7889befc3675e900441674f31f3dc60d0c49ac6fb"
+    },
+    "textures/T_GreyWarden_Visor_ORM.png": {
+      "bytes": 2734181,
+      "sha256": "b702bbc41e691775f2ebbc80336bb4d0d6a74144785a6ba562c8f0c00a51c43a"
+    }
+  }
+}

@@ -1,0 +1,33 @@
+# Unreal build/cache output, in any Unreal project in the repo
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+*.dmp
+
+# Editor debug captures and scratch output
+tools/shots/
+tools/out*.txt
+tools/snap.txt
+tools/summary.txt
+tools/s/anim2/_r.py
+tools/s/anim2/_names.py
+tools/s/anim2/*.log
+
+# Third-party sound files: the Pixabay / Mixkit licences allow use in the game but not
+# redistribution of the audio on its own. Sources are listed in audio/licensed/sources.txt;
+# the build scripts in audio/tools rebuild everything from those downloads.
+audio/licensed/*.mp3
+audio/licensed/*.wav
+audio/work/
+audio/wav_licensed/
+audio/wav_licensed_*/
+audio/stage*/
+
+# Python / Blender / OS clutter
+__pycache__/
+*.pyc
+*.blend1
+*.blend2
+Thumbs.db
+.DS_Store

@@ -1,0 +1,18 @@
+00:01.890  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_master.blend"
+00:03.312  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\03_forms\material_front.png'
+00:03.656  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\03_forms\material_side.png'
+00:04.015  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\03_forms\material_threequarter.png'
+00:04.359  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\03_forms\material_back.png'
+BlenderMCP: cannot start server in background mode (blender -b) - commands would never execute
+BlenderMCP: run Blender with a GUI, or use a virtual display: xvfb-run -a blender
+BlenderMCP addon registered
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\03_forms\material_front.png
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\03_forms\material_side.png
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\03_forms\material_threequarter.png
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\03_forms\material_back.png
+size x 0.779 y 0.516 z 1.802 m
+BlenderMCP server stopped
+BlenderMCP addon unregistered
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

@@ -1,0 +1,60 @@
+{
+  "status": "WIP; engine and visual acceptance pending",
+  "original_bone_count": 88,
+  "original_bone_errors": [],
+  "extra_bones": [
+    "cape_l_01",
+    "cape_l_02",
+    "cape_l_03",
+    "cape_l_04",
+    "cape_l_05",
+    "cape_c_01",
+    "cape_c_02",
+    "cape_c_03",
+    "cape_c_04",
+    "cape_c_05",
+    "cape_r_01",
+    "cape_r_02",
+    "cape_r_03",
+    "cape_r_04",
+    "cape_r_05"
+  ],
+  "triangles": 59749,
+  "parts": [
+    {
+      "name": "SKM_GreyWarden_Armor",
+      "triangles": 18447,
+      "vertices": 9606,
+      "uv_layers": 1,
+      "unweighted": 0,
+      "max_influences": 3
+    },
+    {
+      "name": "SKM_GreyWarden_Cloth",
+      "triangles": 16222,
+      "vertices": 8159,
+      "uv_layers": 1,
+      "unweighted": 0,
+      "max_influences": 4
+    },
+    {
+      "name": "SKM_GreyWarden_Leather",
+      "triangles": 24364,
+      "vertices": 13295,
+      "uv_layers": 1,
+      "unweighted": 0,
+      "max_influences": 4
+    },
+    {
+      "name": "SKM_GreyWarden_Visor",
+      "triangles": 716,
+      "vertices": 368,
+      "uv_layers": 1,
+      "unweighted": 0,
+      "max_influences": 1
+    }
+  ],
+  "source_hand_topology": "Gloves derived from user-provided Quinn reference; preserve mannequin hand/finger weights.",
+  "scale": "metres in Blender; source armature retains original parent 0.01 transform; export FBX_SCALE_UNITS",
+  "inferred": "Cape bone locations and costume thickness inferred. No claim of 1:1 reference acceptance."
+}

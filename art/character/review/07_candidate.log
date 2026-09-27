@@ -1,0 +1,57 @@
+00:01.719  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_candidate.blend"
+00:03.141  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\rest\material_front.png'
+00:03.406  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\rest\material_side.png'
+00:03.672  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\rest\material_threequarter.png'
+00:03.953  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\rest\material_back.png'
+00:03.953  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_candidate.blend"
+00:04.953  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_pose_review.blend"
+00:05.641  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\idle_1\material_front.png'
+00:05.922  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\idle_1\material_threequarter.png'
+00:05.937  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_pose_review.blend"
+00:06.562  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\idle_115\material_front.png'
+00:06.859  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\idle_115\material_threequarter.png'
+00:06.859  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_candidate.blend"
+00:07.047  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\overhead.blend"
+00:07.578  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\overhead\material_threequarter.png'
+00:07.578  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_candidate.blend"
+00:07.750  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\stride.blend"
+00:08.297  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\stride\material_threequarter.png'
+00:08.297  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_candidate.blend"
+00:08.469  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\crouch.blend"
+00:09.031  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\crouch\material_threequarter.png'
+00:09.031  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_candidate.blend"
+BlenderMCP: cannot start server in background mode (blender -b) - commands would never execute
+BlenderMCP: run Blender with a GUI, or use a virtual display: xvfb-run -a blender
+BlenderMCP addon registered
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\rest\material_front.png
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\rest\material_side.png
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\rest\material_threequarter.png
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\rest\material_back.png
+size x 1.041 y 0.549 z 1.802 m
+FBX version: 7700
+Error, could not find any file path in  FBXElem(id=b'Texture', props=[2831175602832, b'EnvSamplerTex\x00\x01Texture', b''], props_type=bytearray(b'LSS'), elems=[FBXElem(id=b'Type', props=[b'TextureVideoClip'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Version', props=[202], props_type=bytearray(b'I'), elems=[]), FBXElem(id=b'TextureName', props=[b'EnvSamplerTex\x00\x01Texture'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Media', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'FileName', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'RelativeFilename', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'ModelUVTranslation', props=[0.0, 0.0], props_type=bytearray(b'DD'), elems=[]), FBXElem(id=b'ModelUVScaling', props=[1.0, 1.0], props_type=bytearray(b'DD'), elems=[]), FBXElem(id=b'Texture_Alpha_Source', props=[b'None'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Cropping', props=[0, 0, 0, 0], props_type=bytearray(b'IIII'), elems=[])])
+       Falling back to:  EnvSamplerTex
+Error, could not find any file path in  FBXElem(id=b'Texture', props=[2835757305248, b'EnvSamplerTex\x00\x01Texture', b''], props_type=bytearray(b'LSS'), elems=[FBXElem(id=b'Type', props=[b'TextureVideoClip'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Version', props=[202], props_type=bytearray(b'I'), elems=[]), FBXElem(id=b'TextureName', props=[b'EnvSamplerTex\x00\x01Texture'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Media', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'FileName', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'RelativeFilename', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'ModelUVTranslation', props=[0.0, 0.0], props_type=bytearray(b'DD'), elems=[]), FBXElem(id=b'ModelUVScaling', props=[1.0, 1.0], props_type=bytearray(b'DD'), elems=[]), FBXElem(id=b'Texture_Alpha_Source', props=[b'None'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Cropping', props=[0, 0, 0, 0], props_type=bytearray(b'IIII'), elems=[])])
+       Falling back to:  EnvSamplerTex
+Info: Saved as "CH_GreyWarden_pose_review.blend"
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\idle_1\material_front.png
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\idle_1\material_threequarter.png
+size x 0.785 y 0.824 z 1.781 m
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\idle_115\material_front.png
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\idle_115\material_threequarter.png
+size x 0.785 y 0.819 z 1.780 m
+Info: Saved as "overhead.blend"
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\overhead\material_threequarter.png
+size x 0.764 y 0.674 z 1.877 m
+Info: Saved as "stride.blend"
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\stride\material_threequarter.png
+size x 1.041 y 1.306 z 1.721 m
+Info: Saved as "crouch.blend"
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\07_candidate\crouch\material_threequarter.png
+size x 1.041 y 0.877 z 1.531 m
+POSE_REVIEW_COMPLETE
+BlenderMCP server stopped
+BlenderMCP addon unregistered
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

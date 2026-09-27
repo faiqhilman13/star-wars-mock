@@ -1,0 +1,39 @@
+pixabay_saber_hum.mp3 | https://pixabay.com/sound-effects/film-special-effects-saber-hummingwav-14651/ | author: freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_lightsaber_ignition.mp3 | https://pixabay.com/sound-effects/film-special-effects-lightsaber-ignition-6816/ | author: freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_lightsaber1.mp3 | https://pixabay.com/sound-effects/film-special-effects-lightsaber1-87666/ | author: freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_lightsaber2.mp3 | https://pixabay.com/sound-effects/film-special-effects-lightsaber2-105441/ | author: freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_lightsaber3.mp3 | https://pixabay.com/sound-effects/film-special-effects-lightsaber3-87667/ | author: freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_lightsaber4.mp3 | https://pixabay.com/sound-effects/film-special-effects-lightsaber4-87668/ | author: freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_lightsaber_clash.mp3 | https://pixabay.com/sound-effects/film-special-effects-lightsaber-clash-88733/ | author: freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_blaster_2.mp3 | https://pixabay.com/sound-effects/film-special-effects-blaster-2-81267/ | author: freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_blstr_1.mp3 | https://pixabay.com/sound-effects/film-special-effects-blstr-1-43903/ | author: freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_scifi_blaster.mp3 | https://pixabay.com/sound-effects/film-special-effects-sci-fi-blaster-199373/ | author: freesound_community | Pixabay Content License (free commercial use, no attribution required)
+mixkit_lightsaber_turn_on.wav | https://mixkit.co/free-sound-effects/light-saber/ (sfx 1709 "Lightsaber turn on") | Mixkit Sound Effects Free License (free commercial use, no attribution required)
+mixkit_lightsaber_swoosh.wav | https://mixkit.co/free-sound-effects/light-saber/ (sfx 3009 "Lightsaber sound swoosh") | Mixkit Sound Effects Free License (free commercial use, no attribution required)
+mixkit_lightsaber_hiss.wav | https://mixkit.co/free-sound-effects/light-saber/ (sfx 1706 "Light saber sword hiss") | Mixkit Sound Effects Free License (free commercial use, no attribution required)
+
+In-game assets (/Game/Jedi/Audio/Licensed) are built from these by audio/tools/build_licensed.py:
+  SW_Saber_Hum_Loop  pixabay_saber_hum 47.3-51.2s, 0.4s crossfade loop
+  SW_Saber_Ignite    mixkit_lightsaber_turn_on
+  SW_Saber_Retract   reversed turn_on + pitch-dropping hum tail
+  SW_Saber_Swing1..5 pixabay_lightsaber3, pixabay_lightsaber4, mixkit swoosh, + rate-shifted variants
+  SW_Saber_Clash     pixabay_lightsaber_clash
+  SW_Saber_Hit       clash head + mixkit hiss
+  SW_Blaster_Fire    pixabay_blstr_1
+  SW_Blaster_Deflect clash head + pitched-up blstr_1
+  SW_Remote_Explode  pixabay_blaster_2, slowed 0.85x
+  SW_Saber_HitBody        clash crack + mixkit hiss sizzle + synthesized low thump (build_licensed.py)
+  SW_Blaster_Fire_Wire    original synthesis: dispersive guy-wire model (tools/synth_blaster.py), no third-party audio
+  SW_Blaster_Deflect_Wire clash crack + synthesized ricochet wire chirp (tools/synth_blaster.py)
+  SW_Saber_HitBody_V2     hum flare: pixabay_saber_hum pitch-spiked, distorted, fluttered + synthesized spark crackle (tools/synth_hit.py)
+  SW_Saber_Clash_V2       same recipe, harder/brighter with a longer crackle tail (tools/synth_hit.py)
+pixabay_montogoronto_energy_weapon_pack.mp3 | https://pixabay.com/sound-effects/film-special-effects-lightsaberenergy-weapon-sci-fi-sound-effects-342755/ | Lightsaber/Energy Weapon Sci-Fi sound effects by Montogoronto | Pixabay Content License (free commercial use, no attribution required)
+pixabay_creatorshome_lightsaber.mp3 | https://pixabay.com/sound-effects/film-special-effects-lightsaber-359562/ | Lightsaber by CreatorsHome | Pixabay Content License (free commercial use, no attribution required)
+pixabay_energy_sword.mp3 | https://pixabay.com/sound-effects/film-special-effects-energy-sword-60906/ | Energy Sword by freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_lightsaber5.mp3 | https://pixabay.com/sound-effects/film-special-effects-042340-lightsaber5mp3-75344/ | 042340_lightsaber5.mp3 by freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_lightsaber_no1.mp3 | https://pixabay.com/sound-effects/film-special-effects-lightsaber-1-14787/ | Lightsaber #1 by freesound_community | Pixabay Content License (free commercial use, no attribution required)
+pixabay_juliush_laser_sword.mp3 | https://pixabay.com/sound-effects/film-special-effects-laser-sword-science-fiction-sound-9830/ | Laser Sword - Science Fiction Sound by JuliusH | Pixabay Content License (free commercial use, no attribution required)
+pixabay_timmysnake_laser_sword.mp3 | https://pixabay.com/sound-effects/film-special-effects-laser-sword-266508/ | laser sword by Timmysnake | Pixabay Content License (free commercial use, no attribution required)
+  SW_Saber_Clash_Rec1..4  recorded clashes cut from pixabay_montogoronto_energy_weapon_pack at 14.33/15.85/17.90/36.46 s (tools/extract_clash.py)
+  SW_Saber_Hit_Rec1..3    recorded impacts from the same pack at 16.78/27.62/31.59 s, cut short and pitched 0.93x (tools/extract_clash.py)
+  SW_Blaster_Deflect_Rec  recorded clash (14.33 s) + synthesized ricochet wire chirp (tools/synth_blaster.py)

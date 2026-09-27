@@ -1,0 +1,29 @@
+00:01.813  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_forms.blend"
+BlenderMCP: cannot start server in background mode (blender -b) - commands would never execute
+BlenderMCP: run Blender with a GUI, or use a virtual display: xvfb-run -a blender
+BlenderMCP addon registered
+FBX version: 7700
+Error, could not find any file path in  FBXElem(id=b'Texture', props=[2831175601872, b'EnvSamplerTex\x00\x01Texture', b''], props_type=bytearray(b'LSS'), elems=[FBXElem(id=b'Type', props=[b'TextureVideoClip'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Version', props=[202], props_type=bytearray(b'I'), elems=[]), FBXElem(id=b'TextureName', props=[b'EnvSamplerTex\x00\x01Texture'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Media', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'FileName', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'RelativeFilename', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'ModelUVTranslation', props=[0.0, 0.0], props_type=bytearray(b'DD'), elems=[]), FBXElem(id=b'ModelUVScaling', props=[1.0, 1.0], props_type=bytearray(b'DD'), elems=[]), FBXElem(id=b'Texture_Alpha_Source', props=[b'None'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Cropping', props=[0, 0, 0, 0], props_type=bytearray(b'IIII'), elems=[])])
+       Falling back to:  EnvSamplerTex
+Error, could not find any file path in  FBXElem(id=b'Texture', props=[2835669722432, b'EnvSamplerTex\x00\x01Texture', b''], props_type=bytearray(b'LSS'), elems=[FBXElem(id=b'Type', props=[b'TextureVideoClip'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Version', props=[202], props_type=bytearray(b'I'), elems=[]), FBXElem(id=b'TextureName', props=[b'EnvSamplerTex\x00\x01Texture'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Media', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'FileName', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'RelativeFilename', props=[b''], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'ModelUVTranslation', props=[0.0, 0.0], props_type=bytearray(b'DD'), elems=[]), FBXElem(id=b'ModelUVScaling', props=[1.0, 1.0], props_type=bytearray(b'DD'), elems=[]), FBXElem(id=b'Texture_Alpha_Source', props=[b'None'], props_type=bytearray(b'S'), elems=[]), FBXElem(id=b'Cropping', props=[0, 0, 0, 0], props_type=bytearray(b'IIII'), elems=[])])
+       Falling back to:  EnvSamplerTex
+DRAPE_FRAME 10
+DRAPE_FRAME 20
+DRAPE_FRAME 30
+DRAPE_FRAME 40
+DRAPE_FRAME 50
+00:12.329  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\review\08_drape_study.blend"
+00:13.719  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\08_drape\material_front.png'
+00:14.063  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\08_drape\material_back.png'
+00:14.438  render           | Saved: 'C:\Users\User\PROJECTS\jedi-arena\art\character\review\08_drape\material_threequarter.png'
+Info: Saved as "08_drape_study.blend"
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\08_drape\material_front.png
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\08_drape\material_back.png
+rendered C:\Users\User\PROJECTS\jedi-arena\art\character\review\08_drape\material_threequarter.png
+size x 0.779 y 0.446 z 1.802 m
+DRAPE_STUDY_COMPLETE
+BlenderMCP server stopped
+BlenderMCP addon unregistered
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit

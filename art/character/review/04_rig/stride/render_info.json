@@ -1,0 +1,37 @@
+{
+  "blend": "C:\\Users\\User\\PROJECTS\\jedi-arena\\art\\character\\review\\04_rig\\stride.blend",
+  "mode": "material",
+  "engine": "cycles",
+  "bbox_min": [
+    -0.5203607678413391,
+    -0.60494065284729,
+    0.08180923014879227
+  ],
+  "bbox_max": [
+    0.5203607678413391,
+    0.7009662389755249,
+    1.8024141788482666
+  ],
+  "size_xyz": [
+    1.0407215356826782,
+    1.305906891822815,
+    1.7206048965454102
+  ],
+  "objects": [
+    "SKM_GreyWarden_Cloth",
+    "SKM_GreyWarden_Armor",
+    "SKM_GreyWarden_Leather",
+    "SKM_GreyWarden_Visor"
+  ],
+  "renders": {
+    "threequarter": {
+      "file": "C:\\Users\\User\\PROJECTS\\jedi-arena\\art\\character\\review\\04_rig\\stride\\material_threequarter.png",
+      "az_el_lens": [
+        35,
+        15,
+        50
+      ],
+      "distance": 3.92581010568473
+    }
+  }
+}

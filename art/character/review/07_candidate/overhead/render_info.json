@@ -1,0 +1,37 @@
+{
+  "blend": "C:\\Users\\User\\PROJECTS\\jedi-arena\\art\\character\\review\\07_candidate\\overhead.blend",
+  "mode": "material",
+  "engine": "cycles",
+  "bbox_min": [
+    -0.37530699372291565,
+    -0.38013145327568054,
+    5.759312818320872e-11
+  ],
+  "bbox_max": [
+    0.3886485993862152,
+    0.29426151514053345,
+    1.876957654953003
+  ],
+  "size_xyz": [
+    0.7639555931091309,
+    0.6743929386138916,
+    1.876957654953003
+  ],
+  "objects": [
+    "SKM_GreyWarden_Cloth",
+    "SKM_GreyWarden_Armor",
+    "SKM_GreyWarden_Leather",
+    "SKM_GreyWarden_Visor"
+  ],
+  "renders": {
+    "threequarter": {
+      "file": "C:\\Users\\User\\PROJECTS\\jedi-arena\\art\\character\\review\\07_candidate\\overhead\\material_threequarter.png",
+      "az_el_lens": [
+        35,
+        15,
+        50
+      ],
+      "distance": 3.5408145563883906
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "view": "front",
+  "az": 0.0,
+  "matte": "C:\\Users\\User\\PROJECTS\\jedi-arena\\art\\character\\ref\\front-matte.png",
+  "m_per_px": 0.00209546,
+  "iou": 0.8691,
+  "ref_only_pct": 5.54,
+  "render_only_pct": 8.69,
+  "band_width_diff": [
+    0.0105,
+    -0.0338,
+    0.0093,
+    0.0245,
+    -0.0023,
+    -0.007,
+    -0.007,
+    -0.0256,
+    0.0268,
+    -0.0501
+  ]
+}

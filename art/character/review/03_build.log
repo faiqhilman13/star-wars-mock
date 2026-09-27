@@ -1,0 +1,12 @@
+00:01.875  blend            | Read blend: "C:\Users\User\PROJECTS\jedi-arena\art\character\CH_GreyWarden_blockout.blend"
+BlenderMCP: cannot start server in background mode (blender -b) - commands would never execute
+BlenderMCP: run Blender with a GUI, or use a virtual display: xvfb-run -a blender
+BlenderMCP addon registered
+Info: Saved as "CH_GreyWarden_master.blend"
+Info: Saved copy as "CH_GreyWarden_forms.blend"
+FORMS_SAVED 289
+BlenderMCP server stopped
+BlenderMCP addon unregistered
+Blender 5.2.1 LTS (hash 9e2066aef7ef built 2026-08-25 02:38:20)
+
+Blender quit
