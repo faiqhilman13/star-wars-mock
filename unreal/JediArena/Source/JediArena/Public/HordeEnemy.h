@@ -81,6 +81,11 @@ protected:
 	// ---------- shared assets (constructor-loaded) ----------
 	UPROPERTY() TObjectPtr<USkeletalMesh> MannyMesh;
 	UPROPERTY() TObjectPtr<USkeletalMesh> QuinnMesh;
+	// Custom enemy models (Blender, rigged to the mannequin skeleton): art/enemies/*.py
+	UPROPERTY() TObjectPtr<USkeletalMesh> ClankerModel;
+	UPROPERTY() TObjectPtr<USkeletalMesh> BulwarkModel;
+	UPROPERTY() TObjectPtr<USkeletalMesh> JetGhostModel;
+	UPROPERTY() TObjectPtr<USkeletalMesh> WardenModel;
 	UPROPERTY() TObjectPtr<UClass> AnimClass;
 	UPROPERTY() TObjectPtr<UMaterialInterface> SurfaceMat;
 	UPROPERTY() TObjectPtr<UMaterialInterface> WaveMat;

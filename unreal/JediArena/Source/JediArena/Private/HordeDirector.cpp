@@ -525,3 +525,38 @@ static FAutoConsoleCommand GJediHordeDebugCmd(
 			}
 		}
 	}));
+
+// Debug: jedi.SpawnEnemy <Clanker|Bulwark|Roller|Jet|Warden|Boss> [distance] [count] -- spawns enemies in front of the Jedi.
+static FAutoConsoleCommand GJediSpawnEnemyCmd(
+	TEXT("jedi.SpawnEnemy"),
+	TEXT("jedi.SpawnEnemy <Clanker|Bulwark|Roller|Jet|Warden|Boss> [distance] [count]"),
+	FConsoleCommandWithArgsDelegate::CreateLambda([](const TArray<FString>& Args)
+	{
+		const FString Kind = Args.Num() > 0 ? Args[0] : TEXT("Clanker");
+		const float Dist = Args.Num() > 1 ? FCString::Atof(*Args[1]) : 400.f;
+		const int32 Count = Args.Num() > 2 ? FMath::Max(1, FCString::Atoi(*Args[2])) : 1;
+		UClass* Class = AClankerDroid::StaticClass();
+		if (Kind == TEXT("Bulwark")) { Class = ABulwarkTrooper::StaticClass(); }
+		else if (Kind == TEXT("Roller")) { Class = ABuzzRoller::StaticClass(); }
+		else if (Kind == TEXT("Jet")) { Class = AJetGhost::StaticClass(); }
+		else if (Kind == TEXT("Warden")) { Class = AMagnaWarden::StaticClass(); }
+		else if (Kind == TEXT("Boss")) { Class = ABossWalker::StaticClass(); }
+		for (TObjectIterator<AJediCharacter> It; It; ++It)
+		{
+			AJediCharacter* Jedi = *It;
+			if (!IsValid(Jedi) || !Jedi->GetWorld() || !Jedi->GetWorld()->IsGameWorld())
+			{
+				continue;
+			}
+			const FVector Fwd = Jedi->GetControlRotation().Vector().GetSafeNormal2D();
+			const FVector Right = FVector::CrossProduct(FVector::UpVector, Fwd);
+			for (int32 i = 0; i < Count; ++i)
+			{
+				const FVector Loc = Jedi->GetActorLocation() + Fwd * Dist + Right * ((i - (Count - 1) * 0.5f) * 180.f) + FVector(0.f, 0.f, 60.f);
+				FActorSpawnParameters Params;
+				Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+				Jedi->GetWorld()->SpawnActor<AActor>(Class, Loc, (-Fwd).Rotation(), Params);
+			}
+			break;
+		}
+	}));

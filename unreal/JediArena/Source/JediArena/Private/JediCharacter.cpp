@@ -1250,6 +1250,9 @@ void AJediCharacter::SpawnSabers(TSubclassOf<AActor> MainClass, TSubclassOf<AAct
 		{
 			Held->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Socket);
 			Held->SetActorRelativeTransform(Grip);
+			// Held sabers never collide: a stray blocking part would shove our own capsule around.
+			// (Blade hits come from the BladeRoot/BladeTip sweep, not from collision.)
+			Held->SetActorEnableCollision(false);
 			if (!bSaberOn)
 			{
 				CallBP(Held, TEXT("Retract"));

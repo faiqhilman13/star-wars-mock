@@ -35,7 +35,7 @@ def run():
 
     # Hilt (inherited) spans z -9..+19 around the grip pivot; the mirrored hilt joins it at z=-9.
     add("Hilt2", "/Script/Engine.StaticMeshComponent", {"staticMesh": "/Game/Jedi/Meshes/SM_SaberHilt.SM_SaberHilt",
-        "relativeLocation": V(0, 0, -18), "relativeRotation": R(0, 0, 180), "relativeScale3D": V(0.01, 0.01, 0.01)})
+        "relativeLocation": V(0, 0, -18), "relativeRotation": R(0, 0, 180), "relativeScale3D": V(0.01, 0.01, 0.01), "bodyInstance": body})
     root2 = add("BladeRoot2", "/Script/Engine.SceneComponent", {"relativeLocation": V(0, 0, -37), "relativeRotation": R(0, 0, 180)})
     blade_props = {"staticMesh": CYL, "castShadow": False, "bodyInstance": body, "relativeLocation": V(0, 0, 50), "relativeRotation": R(0, 0, 0)}
     add("BladeCore2", "/Script/Engine.StaticMeshComponent", dict(blade_props, overrideMaterials=[RED_CORE], relativeScale3D=V(0.026, 0.026, 1.0)), root2)
