@@ -1,10 +1,10 @@
 AN = "/Game/Jedi/Anims/"
 def a(n): return AN + n + "." + n
-# (clip, HitStart, HitEnd, ChainTime, DamageMultiplier, Lunge) from tools/s/anim3/STAFF_READY
+# (clip, HitStart, HitEnd, ChainTime, DamageMultiplier, Lunge); combos 1-3 from tools/s/anim3/anl_staff2.json (contacts2.py)
 # (windows span every blade contact in the clip; a victim is only hit once per swing).
-COMBO = [("AS_Staff_Combo1", 0.12, 0.54, 0.62, 1.0, 300),   # figure-8 twirl strikes
-         ("AS_Staff_Combo2", 0.09, 0.74, 0.80, 1.1, 280),   # rising 360 spin
-         ("AS_Staff_Combo3", 0.03, 0.64, 0.72, 1.3, 420),   # overhead windmill -> chop -> lunge
+COMBO = [("AS_Staff_Combo1", 0.16, 0.54, 0.63, 1.0, 360),   # step-in diagonal cleave + horizontal sweep (v2)
+         ("AS_Staff_Combo2", 0.13, 0.53, 0.60, 1.1, 420),   # rising cut + lunging spear thrust (v2; thrust window set by hand)
+         ("AS_Staff_Combo3", 0.20, 0.54, 0.60, 1.3, 400),   # leaping overhead double chop (v2)
          ("AS_Staff_Combo4", 0.09, 0.44, 0.60, 1.6, 380)]   # horizontal 360 finisher
 def fix(v):
     if isinstance(v, dict) and "refPath" in v: return v["refPath"]

@@ -5,6 +5,7 @@ import math, os, random, subprocess, sys, wave, array
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_licensed import SR, norm, mix, fade, cut, rate
 from synth_hit import crackle
+from jet_sounds import jetpack
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TTS = os.path.join(HERE, "..", "work", "tts")
@@ -156,11 +157,52 @@ for i in range(1, 5):
     save(f"SW_Death_Trooper_{i}", norm(fade(mix(at(v, 0.04), (thud(), 0.6, 0.0), (squelch(), 0.5, vl + 0.06),
                                                   (clatter(0.35, 2), 0.25, vl + 0.1)), 0.002, 0.06), -1.0))
 
+def sputter_out(dur, seed):
+    """The jetpack coughing out: its own roar, sagging in pitch, chopped into ever-sparser bursts."""
+    src = jetpack(dur + 0.4, 60 + seed)
+    out, t, n = [], 0.0, int(dur * SR)
+    for k in range(n):
+        i = int(t)
+        if i + 1 >= len(src):
+            break
+        f = t - i
+        out.append(src[i] * (1 - f) + src[i + 1] * f)
+        t += 1.0 - 0.45 * k / n
+    r = random.Random(300 + seed)
+    gate, t, on = [0.0] * len(out), 0.0, True
+    while t < dur:
+        u = t / dur
+        seg = r.uniform(0.05, 0.12) * (1 - 0.5 * u) if on else r.uniform(0.02, 0.06) + 0.22 * u * u
+        amp = (1 - u) ** 1.2 if on else 0.0
+        for k in range(int(t * SR), min(len(out), int((t + seg) * SR))):
+            gate[k] = amp
+        t += seg
+        on = not on
+    g, sm = 0.0, []
+    for x in gate:   # 4 ms smoothing so the gate doesn't click
+        g += (x - g) * (1 - math.exp(-1 / (0.004 * SR)))
+        sm.append(g)
+    return [a * b for a, b in zip(out, sm)]
+
+
+def whistle(dur, f0, f1):
+    """Cartoon falling whistle, kept quiet under the rest."""
+    out, ph, n = [], 0.0, int(dur * SR)
+    for k in range(n):
+        u = k / n
+        ph += 2 * math.pi * f0 * (f1 / f0) ** u * (1 + 0.012 * math.sin(2 * math.pi * 6 * k / SR)) / SR
+        out.append(math.sin(ph) * min(1.0, k / (0.05 * SR)) * (0.6 + 0.4 * u))
+    return fade(out, 0.01, 0.08)
+
+
 for i in range(1, 4):
-    v = voice(f"jet_{i}", "jet")
+    v = voice(f"jet_{i}", "trooper")   # short comm call, then the pack dies under them
     vl = len(v) / SR
-    save(f"SW_Death_Jet_{i}", norm(fade(mix(at(v, 0.0), (sputter(vl + 0.4), 0.55, 0.05), (thud(0.3), 0.5, vl + 0.25),
-                                              (squelch(), 0.4, vl + 0.1)), 0.002, 0.08), -1.0))
+    crash = max(vl + 0.1, 0.55) + 0.85
+    save(f"SW_Death_Jet_{i}", norm(fade(mix(at(v, 0.0), (sputter_out(1.5, i), 0.45, 0.0), (squelch(), 0.4, vl + 0.02),
+                                              (whistle(0.85, 1500.0 - i * 90.0, 380.0), 0.16, crash - 0.85),
+                                              (thud(0.35, 80.0, 40.0), 0.9, crash), (clatter(0.5, 4), 0.45, crash + 0.03),
+                                              (pop(0.3), 0.5, crash)), 0.002, 0.1), -1.0))
 
 for i in range(1, 3):
     v = voice(f"warden_{i}", "warden")

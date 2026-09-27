@@ -7,7 +7,7 @@ LS="/Game/Jedi/Anims/Authoring/LS_SaberAuthoring_V3.LS_SaberAuthoring_V3"
 BODY={"bindingId":"BF895B52-4243-5DF0-29DD-768D103845A0","sequence":ref(LS)}
 RIG="/Game/Characters/Mannequins/Rigs/CR_Mannequin_Body"
 SEC=LS+":MovieScene_0.MovieSceneControlRigParameterTrack_0.MovieSceneControlRigParameterSection_0"
-ACTOR="/Game/Jedi/Maps/Lvl_JediArena.Lvl_JediArena:PersistentLevel.BP_GripTest_C_UAID_D8BBC102E1FDCD0503_1297333191"
+ACTOR="/Game/Jedi/Maps/Lvl_JediArena.Lvl_JediArena:PersistentLevel.BP_GripTest_C_UAID_D8BBC102E1FDF50503_1797351231"
 WORLD="/Game/Jedi/Maps/Lvl_JediArena.Lvl_JediArena"
 BASEF=227
 def X(n, **kw):
@@ -94,4 +94,4 @@ def tup(d): return (d["x"],d["y"],d["z"]) if "x" in d else (d["pitch"],d["yaw"],
 def guard():
     if T("app.IsPIERunning"): raise RuntimeError("PIE_RUNNING")
 def run():
-    guard(); show(3309); w=getw("hand_r_ik_ctrl",3309); show(3309); return {"h":w["location"]}
+    guard(); show(2521); w=getw("hand_r_ik_ctrl",2521); show(2521); return {"h":w["location"]}

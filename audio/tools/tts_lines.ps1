@@ -16,9 +16,9 @@ $lines = @(
   "trooper_2|David|2|Ugh!",
   "trooper_3|David|3|Man down!",
   "trooper_4|David|0|Aaagh!",
-  "jet_1|David|-2|Whoaaaa!",
-  "jet_2|Zira|-2|Aaaaaaah!",
-  "jet_3|David|0|Mayday!",
+  "jet_1|David|2|Mayday! Mayday!",
+  "jet_2|David|3|I'm hit! I'm hit!",
+  "jet_3|David|2|Going down!",
   "warden_1|David|-5|Nooooo...",
   "warden_2|David|-4|Impossible...",
   "roller_1|Zira|8|Eek!"

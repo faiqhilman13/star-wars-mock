@@ -78,8 +78,8 @@ Third-person lightsaber + Force combat: a Dynasty-Warriors-style horde arena whe
 | **Clanker droids** | Fodder with terrible aim and a lot of chatter |
 | **Bulwark Troopers** | Carry a frontal energy shield. Break it with the Force, or hit them from the side |
 | **Buzz-Rollers** | Roll in and unfold into shielded turrets. Lightning fries the shield |
-| **Jet Ghosts** | Hover and fire rockets. Force Pull brings them down |
-| **Magna Wardens** | Guard with electrostaffs. Parry their strikes |
+| **Jet Ghosts** | Weave around the arena on roaring jetpacks, banking into turns. They dive past you in blaster strafing runs, or hang in the air to fire rockets. Force Pull brings them down |
+| **Magna Wardens** | Electrostaff elites that fight with the saberstaff combo set. They sprint in, leap into overhead chops, chain 2–3 swings, and counter right after blocking you. Each opening blow has a brief wind-up, so parry it |
 | **Sith Acolytes** | Officers |
 | **Scrap Colossus** (`ABossWalker`) | The boss: a junk chicken-walker. Its glowing knees are the weak points; it collapses at every 25% of health and rages below 50% |
 
@@ -88,9 +88,11 @@ Third-person lightsaber + Force combat: a Dynasty-Warriors-style horde arena whe
   - `clanker.py` and `trooper.py` (Bulwark, Jet Ghost, Warden) make skinned meshes on the mannequin skeleton, imported with `jedi.ImportSkeletal`.
   - `roller.py` makes three static meshes for the Buzz-Roller (armoured ball, turret head, spider leg), imported with `jedi.ImportStatic <fbx> <folder> <name>`.
 - Each enemy type has its own death sounds (`/Game/Jedi/Audio/Deaths`):
-  - Droids squawk, troopers cut out over their comms, Jet Ghosts sputter and fall, Wardens groan, and Rollers beep and pop.
+  - Droids squawk, troopers cut out over their comms, Wardens groan, and Rollers beep and pop.
+  - Jet Ghosts radio a mayday while the pack sputters out, then whistle down and crash.
   - They're built by `audio/tools/death_sounds.py` from Windows text-to-speech takes (`tts_lines.ps1`) plus synthesized layers.
   - Playback is throttled, so a Force Storm that drops thirty droids plays a handful of voices, never the same clip twice in a row.
+- The Jet Ghost jetpack loop and rocket launches are original synthesis, built by `audio/tools/jet_sounds.py`.
 
 **Code**
 - `AHordeDirector`: waves, attack tokens (only a few enemies shoot or swing at once), KOs, hype and banners.

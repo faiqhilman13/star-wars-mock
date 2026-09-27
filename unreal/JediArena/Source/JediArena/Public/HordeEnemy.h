@@ -16,6 +16,8 @@ class UAnimSequenceBase;
 class UNiagaraSystem;
 class USkeletalMesh;
 class AHordePickup;
+class UAnimMontage;
+class UAudioComponent;
 
 UENUM(BlueprintType)
 enum class EHordeType : uint8
@@ -87,6 +89,13 @@ protected:
 	UPROPERTY() TObjectPtr<USkeletalMesh> JetGhostModel;
 	UPROPERTY() TObjectPtr<USkeletalMesh> WardenModel;
 	UPROPERTY(Transient) TArray<TObjectPtr<USoundBase>> DeathSounds;
+	/** Magna Warden: the Jedi saberstaff combo set (same grip, so the electrostaff moves like a saberstaff). */
+	UPROPERTY(Transient) TArray<TObjectPtr<UAnimSequenceBase>> StaffComboAnims;
+	/** Jet Ghost: full-body loop while flying (stops the ground locomotion from jogging in mid-air). */
+	UPROPERTY(Transient) TObjectPtr<UAnimSequenceBase> HoverAnim;
+	UPROPERTY(Transient) TObjectPtr<USoundBase> JetLoopSound;
+	UPROPERTY(Transient) TArray<TObjectPtr<USoundBase>> RocketSounds;
+	UPROPERTY(Transient) TObjectPtr<UAudioComponent> EngineAudio;
 	UPROPERTY() TObjectPtr<UClass> AnimClass;
 	UPROPERTY() TObjectPtr<UMaterialInterface> SurfaceMat;
 	UPROPERTY() TObjectPtr<UMaterialInterface> WaveMat;
@@ -117,6 +126,7 @@ protected:
 
 private:
 	enum class EState : uint8 { Approach, Aim, Melee, Stagger, Airborne, Rolling, Deploying, Deployed, Hover, Stunned, Dead };
+	enum class EJetMode : uint8 { Cruise, SwoopIn, SwoopOut, HoverShot };
 
 	void BuildLooks();
 	UMaterialInstanceDynamic* MakeMat(const FLinearColor& Color, float Roughness, float Metallic, const FLinearColor& Emissive = FLinearColor::Black);
@@ -125,6 +135,10 @@ private:
 	void TickGround(float Dt, ACharacter* Player);
 	void TickRoller(float Dt, ACharacter* Player);
 	void TickJet(float Dt, ACharacter* Player);
+	void TickWarden(float Dt, ACharacter* Player);
+	void StartWardenSwing(int32 Index, bool bFast, bool bChained);
+	void UpdateJetVisuals(float Dt);
+	void FireBolt(ACharacter* Player, float Damage, float Speed, float Scale, float Spread, USoundBase* Sound, float Volume, float Pitch);
 	FVector SteerAround(const FVector& Desired) const;
 	void FaceToward(const FVector& Target, float Dt, float DegPerSec);
 	void BeginAim();
@@ -161,6 +175,36 @@ private:
 	float DeployAlpha = 0.f;
 	float RollAngle = 0.f;
 	TWeakObjectPtr<AActor> LastHitter;
+
+	// Jet Ghost flight
+	EJetMode JetMode = EJetMode::Cruise;
+	float JetModeUntil = 0.f;
+	FVector SwoopTarget = FVector::ZeroVector;
+	FVector SwoopExit = FVector::ZeroVector;
+	int32 SwoopShots = 0;
+	float NextSwoopShot = 0.f;
+	bool bRocketFired = false;
+	float OrbitRadius = 1100.f;
+	float LeanPitch = 0.f;
+	float LeanRoll = 0.f;
+	FVector MeshBaseLoc = FVector::ZeroVector;
+	FQuat MeshBaseRot = FQuat::Identity;
+	float SputterUntil = 0.f;
+
+	// Magna Warden melee
+	TWeakObjectPtr<UAnimMontage> SwingMontage;
+	TArray<float> SwingHits;   // anim-time (s) of each strike in the current swing
+	int32 NextSwingHit = 0;
+	int32 ComboStep = 0;
+	int32 CombosLeft = 0;
+	float SwingRate = 1.f;
+	float SwingChainPos = 0.f;
+	float SwingStart = 0.f;
+	float SwingTellUntil = 0.f;
+	bool bSwingCommitted = false;
+	bool bLeapPending = false;
+	bool bRiposte = false;
+	float NextLeapTime = 0.f;
 
 	static TArray<TWeakObjectPtr<AHordeEnemy>> AllEnemies;
 };

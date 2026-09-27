@@ -1,0 +1,12 @@
+s_c1: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 70s err=None
+s_c1: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 23s err=None
+s_c1: done [24, 25, 26] in 6s err=None
+CLIP_OK s_c1
+s_c2: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 71s err=None
+s_c2: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 23s err=None
+s_c2: done [24, 25, 26, 27] in 7s err=None
+CLIP_OK s_c2
+s_c3: done [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] in 68s err=None
+s_c3: done [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23] in 21s err=None
+s_c3: done [24, 25, 26, 27, 28] in 10s err=None
+CLIP_OK s_c3
